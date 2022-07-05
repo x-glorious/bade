@@ -10,7 +10,7 @@
 
 - **实现**拖动功能
 
-- 当前**内置布局暂时只有**`BadeMind.ChildAlignMode.heirCenter`布局算法支持拖拽功能
+- 当前**内置布局暂时只有**`BadeMind.ChildAlignMode.structured`布局算法支持拖拽功能
 
 ## Installation
 
@@ -29,7 +29,7 @@ import ReactDom from 'react-dom'
 
 import { BadeMind, BadeMindReact } from 'bade-mind-react'
 
-const root: BadeMind.Root = {
+const root: BadeMindReact.Root = {
   negative: [
     {
       attachData: 'Negative 1 leaf',
@@ -75,7 +75,8 @@ const Render = (props: {
 
 const options: BadeMind.Options = {
   nodeSeparate: 20,
-  rankSeparate: 60
+  rankSeparate: 60,
+  childAlignMode: BadeMind.ChildAlignMode.structured
 }
 
 const Demo = () => {

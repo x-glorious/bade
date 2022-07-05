@@ -20,7 +20,7 @@ const Render = (props: {
 }
 
 const generateChildren = () => {
-  const result: BadeMind.Node[] = []
+  const result: BadeMindReact.Node[] = []
   const num = Math.ceil(10 * Math.random())
   for (let counter = 0; counter < num; counter++) {
     result.push({
@@ -33,7 +33,7 @@ const generateChildren = () => {
 }
 
 const Demo = () => {
-  const [data, setData] = useState<BadeMind.Root>(baseRoot)
+  const [data, setData] = useState<BadeMindReact.Root>(baseRoot)
   const [anchor, setAnchor] = useState<string | undefined>()
   return (
     <BadeMindReact.Graphic
