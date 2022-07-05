@@ -1,0 +1,48 @@
+$size: 8px;
+$border-radius: 4px;
+$active-background: #7a7374;
+
+.axis{
+  position: absolute;
+
+  .thumb{
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-radius: $border-radius;
+    // 大理石灰
+    background: #c4cbcf;
+
+    &:hover{
+      background: $active-background;
+    }
+  }
+
+  &--active{
+    .thumb{
+      background: $active-background;
+    }
+  }
+
+  &--y{
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: $size;
+
+    .thumb{
+      width: 100%;
+    }
+  }
+
+  &--x{
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: $size;
+
+    .thumb{
+      height: 100%;
+    }
+  }
+}

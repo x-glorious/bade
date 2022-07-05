@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "es2015",
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "noImplicitAny": false,
+    "allowSyntheticDefaultImports": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": true,
+    "strictNullChecks": true,
+    "sourceMap": false,
+    "jsx": "react",
+    "declaration": true,
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "declarationDir": "./lib",
+    "typeRoots": ["node_modules/@types"]
+  },
+  "include": ["./index.ts"],
+  "exclude": ["node_modules/"],
+  "compileOnSave": false
+}

@@ -1,0 +1,35 @@
+{
+  "name": "bade-mind-react",
+  "version": "1.2.0",
+  "description": "Bade core",
+  "main": "./lib/index.js",
+  "module": "./lib/index.module.js",
+  "types": "./lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "demo": "parcel demo/index.html",
+    "clear": "rm -rf lib",
+    "compile": "npm run clear && rollup -c",
+    "compile:watch": "npm run clear && rollup -cw"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bade-mind": "^1.2.0",
+    "classnames": "^2.3.1",
+    "d3": "^7.4.4"
+  },
+  "devDependencies": {
+    "@types/d3": "^7.1.0",
+    "@types/react": "^18.0.5",
+    "react": "^16.8.x || ~17 || ~18",
+    "react-dom": "^16.8.x || ~17 || ~18"
+  },
+  "peerDependencies": {
+    "react": "^16.8.x || ~17 || ~18",
+    "react-dom": "^16.8.x || ~17 || ~18"
+  }
+}

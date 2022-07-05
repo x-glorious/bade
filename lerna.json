@@ -1,0 +1,24 @@
+{
+  "packages": [
+    "packages/**/*"
+  ],
+  "command": {
+    "publish": {
+      "ignoreChanges": [
+        "**/*.md",
+        "**/scripts/**",
+        "**/lib/**"
+      ],
+      "message": "chore: publish %s"
+    },
+    "bootstrap": {
+      "hoist": true
+    },
+    "version": {
+      "allowBranch": [
+        "main"
+      ]
+    }
+  },
+  "version": "1.0.0"
+}

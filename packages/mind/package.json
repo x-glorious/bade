@@ -1,0 +1,32 @@
+{
+  "name": "bade-mind",
+  "version": "1.2.0",
+  "description": "Bade core",
+  "main": "./lib/index.js",
+  "module": "./lib/index.module.js",
+  "types": "./lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "test": "jest",
+    "demo": "parcel demo/index.html",
+    "clear": "rm -rf lib",
+    "compile": "npm run clear && rollup -c",
+    "compile:watch": "npm run clear && rollup -cw"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "classnames": "^2.3.1",
+    "d3": "^7.4.4",
+    "dagre": "^0.8.5",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/d3": "^7.1.0",
+    "@types/dagre": "^0.7.47",
+    "@types/lodash": "^4.14.181"
+  }
+}

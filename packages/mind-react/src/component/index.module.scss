@@ -1,0 +1,72 @@
+.viewport,.root{
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.viewport{
+  &--drag-move{
+    cursor: pointer;
+  }
+}
+
+.container{
+  position: relative;
+}
+
+.nodes{
+  position: relative;
+}
+
+.node-wrapper{
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.drag-mirror-node{
+  cursor: pointer;
+}
+
+.temporary-line{
+  position: absolute;
+  pointer-events: none;
+}
+
+// default set
+.node-wrapper--dragging{
+  &>*{
+    outline: 2px solid #c04851;
+  }
+}
+
+// default set
+.node-wrapper--attached{
+  &>*{
+    outline: 2px solid #2775b6;
+  }
+}
+
+// default set
+.drag-mirror-node{
+  opacity: 0.6;
+
+  &>*{
+    outline: 2px solid #2775b6;
+  }
+}
+
+:global{
+  // default set
+  .bade-mind{
+    &__lines{
+      stroke: #2775b6;
+      stroke-width: 3px;
+    }
+
+    &__temporary-line{
+      opacity: 0.6;
+    }
+  }
+}
