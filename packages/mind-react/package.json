@@ -1,6 +1,6 @@
 {
   "name": "bade-mind-react",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Bade mind react wrapper component",
   "main": "./lib/index.js",
   "module": "./lib/index.module.js",
@@ -14,7 +14,12 @@
     "compile": "npm run clear && rollup -c",
     "compile:watch": "npm run clear && rollup -cw"
   },
-  "keywords": ["bade","mind","react","d3"],
+  "keywords": [
+    "bade",
+    "mind",
+    "react",
+    "d3"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {

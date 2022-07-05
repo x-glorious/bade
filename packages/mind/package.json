@@ -1,6 +1,6 @@
 {
   "name": "bade-mind",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Bade mind core",
   "main": "./lib/index.js",
   "module": "./lib/index.module.js",
@@ -15,7 +15,12 @@
     "compile": "npm run clear && rollup -c",
     "compile:watch": "npm run clear && rollup -cw"
   },
-  "keywords": ["mind","d3","custom", "pure javascript"],
+  "keywords": [
+    "mind",
+    "d3",
+    "custom",
+    "pure javascript"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
