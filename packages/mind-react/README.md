@@ -184,7 +184,7 @@ interface Node extends Omit<BadeMind.Node, 'sizeof' | 'children'> {
      * @default false
      */
     beProtected?: boolean
-    /**
+    /**
      * 节点总是可见（超出可视区域不会被销毁也不会改变`visible`状态）
      * @default false
      */

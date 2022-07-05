@@ -306,7 +306,7 @@ function getNodeOrientation(id: string): BadeMind.Orientation | undefined
 生成拖动控制器
 
 - 根节点不可拖拽
-- 当前**内置布局方式暂时只有**`BadeMind.ChildAlignMode.heirCenter`布局算法支持拖拽功能
+- 当前**内置布局方式暂时只有**`BadeMind.ChildAlignMode.structured`布局算法支持拖拽功能
 
 ```tsx
 function dragControllerBuilder(drag: BadeMind.Node | string): Drag | undefined
