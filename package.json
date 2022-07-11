@@ -7,10 +7,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "bootstrap": "./node_modules/.bin/lerna bootstrap"
   },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:ordinaryP/bade.git"
-  },
   "author": "",
   "license": "ISC",
   "engines": {

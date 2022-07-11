@@ -8,6 +8,10 @@
   "files": [
     "lib"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ordinaryP/bade/tree/main/packages/mind-react"
+  },
   "scripts": {
     "demo": "parcel demo/index.html",
     "clear": "rm -rf lib",
