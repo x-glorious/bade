@@ -1,15 +1,15 @@
 import { Helper } from '../helper'
-import { BadeMind } from '../index'
+import { Mind } from '../index'
 import { Zoom } from './zoom'
 
 export const nodeTranslateTo = (
   context: {
     id: string
-    cacheMap: BadeMind.CacheMap
-    diff: BadeMind.Coordinate
-    relative: BadeMind.Relative
+    cacheMap: Mind.CacheMap
+    diff: Mind.Coordinate
+    relative: Mind.Relative
     viewport: HTMLElement
-    transform: BadeMind.Transform
+    transform: Mind.Transform
     zoom: Zoom
   },
   duration?: number
@@ -20,39 +20,39 @@ export const nodeTranslateTo = (
   if (!cache) {
     throw Helper.error('id match is not exist or folded')
   } else {
-    const viewportSize: BadeMind.Size = {
+    const viewportSize: Mind.Size = {
       height: viewport.clientHeight,
       width: viewport.clientWidth
     }
-    const relativeCoordinate: BadeMind.Coordinate = {
+    const relativeCoordinate: Mind.Coordinate = {
       x: 0,
       y: 0
     }
-    const nodeToScreenCoordinate: BadeMind.Coordinate = {
+    const nodeToScreenCoordinate: Mind.Coordinate = {
       x: cache.rect.x * transform.scale,
       y: cache.rect.y * transform.scale
     }
 
     switch (relative.x) {
-      case BadeMind.RelativeX.left:
+      case Mind.RelativeX.left:
         relativeCoordinate.x = 0
         break
-      case BadeMind.RelativeX.middle:
+      case Mind.RelativeX.middle:
         relativeCoordinate.x = viewportSize.width / 2
         break
-      case BadeMind.RelativeX.right:
+      case Mind.RelativeX.right:
         relativeCoordinate.x = viewportSize.width
         break
     }
 
     switch (relative.y) {
-      case BadeMind.RelativeY.top:
+      case Mind.RelativeY.top:
         relativeCoordinate.y = 0
         break
-      case BadeMind.RelativeY.middle:
+      case Mind.RelativeY.middle:
         relativeCoordinate.y = viewportSize.height / 2
         break
-      case BadeMind.RelativeY.bottom:
+      case Mind.RelativeY.bottom:
         relativeCoordinate.y = viewportSize.height
         break
     }

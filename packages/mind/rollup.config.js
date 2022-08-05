@@ -21,13 +21,13 @@ export default {
       file: 'lib/index.min.js',
       format: 'iife',
       // sourcemap: !production,
-      name: 'badeMind',
+      name: 'mind',
       strict: false
     },
     {
       file: 'lib/index.umd.js',
       format: 'umd',
-      name: 'badeMind',
+      name: 'mind',
       strict: false
     }
   ],

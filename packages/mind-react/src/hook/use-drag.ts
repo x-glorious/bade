@@ -2,23 +2,23 @@
 /* eslint-disable prettier/prettier*/
 import { useEffect, useRef, useState } from 'react'
 
-import { BadeMind } from 'bade-mind'
+import { Mind } from  'bade-mind'
 import * as D3 from 'd3'
 
-import { BadeMindReact } from '../index'
+import { MindReact } from '../index'
 import { useShadowState } from './use-shadow-state'
 
 export const useDrag = (context: {
-  mind?: BadeMind.Graphic
+  mind?: Mind.Graphic
   draggableNodeWrapperQualifier: string
   nodeWrapperClassName: string
   nodesContainer: HTMLDivElement | null
-  onDragStart?: BadeMindReact.DragStartEvent
-  onDrag?: BadeMindReact.DragEvent
-  onDragEnd?: BadeMindReact.DragEndEvent
-  sizeof: (id: string) => BadeMind.Size | undefined
-  renderNodes: BadeMindReact.Node[]
-  data: BadeMindReact.Root
+  onDragStart?: MindReact.DragStartEvent
+  onDrag?: MindReact.DragEvent
+  onDragEnd?: MindReact.DragEndEvent
+  sizeof: (id: string) => Mind.Size | undefined
+  renderNodes: MindReact.Node[]
+  data: MindReact.Root
   renderChangeToggle: number
 }) => {
   const {
@@ -36,18 +36,18 @@ export const useDrag = (context: {
   } = context
 
   // 被拖动的节点
-  const [dragNode, setDragNode, dragNodeShadow] = useShadowState<BadeMindReact.Node | undefined>(
+  const [dragNode, setDragNode, dragNodeShadow] = useShadowState<MindReact.Node | undefined>(
     undefined
   )
   // 被拖动节点附着的节点
   const [dragAttachedNode, setDragAttachedNode, dragAttachedNodeShadow] = useShadowState<
-    BadeMindReact.Node | undefined
+    MindReact.Node | undefined
   >(undefined)
   // 拖动操作控制器
-  const dragController = useRef<BadeMind.Drag | undefined>(undefined)
+  const dragController = useRef<Mind.Drag | undefined>(undefined)
   // 拖动镜像节点位置
   const [dragMirrorPosition, setDragMirrorPosition, dragMirrorPositionShadow] =
-    useShadowState<BadeMind.Coordinate>({
+    useShadowState<Mind.Coordinate>({
       x: 0,
       y: 0
     })
@@ -59,7 +59,7 @@ export const useDrag = (context: {
     size: { height: 0, width: 0 },
     start: { x: 0, y: 0 }
   })
-  const dragOrientation = useRef<BadeMind.Orientation | undefined>(undefined)
+  const dragOrientation = useRef<Mind.Orientation | undefined>(undefined)
 
   useEffect(() => {
     if (mind && nodesContainer) {
@@ -102,7 +102,7 @@ export const useDrag = (context: {
                     onDragStart({
                       node: dragNode
                     })
-                  setDragNode(dragNode as BadeMindReact.Node)
+                  setDragNode(dragNode as MindReact.Node)
                   dragController.current = mind.dragControllerBuilder(dragId)
                 }
               }
@@ -110,11 +110,11 @@ export const useDrag = (context: {
             .on('drag', (e) => {
               if (dragController.current) {
                 const scale = mind.getTransform().scale
-                const diff: BadeMind.Coordinate = {
+                const diff: Mind.Coordinate = {
                   x: (e.x - dragMirrorInfo.current.start.x) / scale,
                   y: (e.y - dragMirrorInfo.current.start.y) / scale
                 }
-                const mirrorCenter: BadeMind.Coordinate = {
+                const mirrorCenter: Mind.Coordinate = {
                   x:
                     diff.x +
                     dragMirrorInfo.current.origin.x +
@@ -132,7 +132,7 @@ export const useDrag = (context: {
                   {
                     ...mirrorCenter
                   },
-                  renderNodes.filter(node => node.droppable === undefined ? true : node.droppable) as BadeMind.Node[]
+                  renderNodes.filter(node => node.droppable === undefined ? true : node.droppable) as Mind.Node[]
                 )
                 dragOrientation.current = target?.orientation
                 // 调用拖动中事件
@@ -162,18 +162,18 @@ export const useDrag = (context: {
                   // 根节点
                   if (attachNode.id === data.node.id) {
                     children =
-                      dragOrientation.current === BadeMind.Orientation.positive
+                      dragOrientation.current === Mind.Orientation.positive
                         ? data.positive
                         : data.negative
                   }
                   index = dragController.current.calcDropIndex(
-                    children as BadeMind.Node[],
+                    children as Mind.Node[],
                     {
                       x: dragMirrorPositionShadow.current.x + dragMirrorInfo.current.size.width / 2,
                       y: dragMirrorPositionShadow.current.y + dragMirrorInfo.current.size.height / 2
                     },
-                    dragNodeShadow.current! as BadeMind.Node,
-                    attachNode as BadeMind.Node
+                    dragNodeShadow.current! as Mind.Node,
+                    attachNode as Mind.Node
                   )
                 }
 

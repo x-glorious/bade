@@ -1,11 +1,11 @@
 import { Helper } from '../helper'
-import { BadeMind } from '../index'
+import { Mind } from '../index'
 import { Process } from './index'
 
 export class Orientation implements Process.Lifecycle {
-  private root: BadeMind.Root
-  private getRootHeirOrientation: (id: string) => BadeMind.Orientation
-  private cacheMap: BadeMind.CacheMap
+  private root: Mind.Root
+  private getRootHeirOrientation: (id: string) => Mind.Orientation
+  private cacheMap: Mind.CacheMap
 
   start = (context: Process.StartContext) => {
     const { root, getRootHeirOrientation, cacheMap } = context
@@ -19,7 +19,7 @@ export class Orientation implements Process.Lifecycle {
 
     // 根节点
     if (!cache.parent) {
-      cache.orientation = BadeMind.Orientation.root
+      cache.orientation = Mind.Orientation.root
     }
     // 根节点直系子代
     else if (cache.parent.id === this.root.node.id) {

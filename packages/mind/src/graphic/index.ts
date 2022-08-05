@@ -3,7 +3,7 @@ import { merge, throttle } from 'lodash'
 
 import { WithDefault } from '../default'
 import { Helper } from '../helper'
-import { BadeMind } from '../index'
+import { Mind } from '../index'
 import { Render } from '../render'
 import { Drag } from './drag'
 import { nodeTranslateTo } from './node-translate-to'
@@ -13,12 +13,12 @@ export class Graphic {
   /**
    * 节点相关信息缓存，树形结构拍平
    */
-  private cacheMap: BadeMind.CacheMap = new Map()
-  private options: Required<BadeMind.Options>
+  private cacheMap: Mind.CacheMap = new Map()
+  private options: Required<Mind.Options>
   private readonly container: HTMLElement
   private readonly viewport: HTMLElement
-  private transform: BadeMind.Transform = WithDefault.transform()
-  private root?: BadeMind.Root
+  private transform: Mind.Transform = WithDefault.transform()
+  private root?: Mind.Root
   private anchor?: string
   private resizeObserver: ResizeObserver
   private unbindCache: (() => void)[] = []
@@ -33,7 +33,7 @@ export class Graphic {
    * @param container 容器
    * @param options 配置参数
    */
-  constructor(viewport: HTMLElement, container: HTMLElement, options?: BadeMind.Options) {
+  constructor(viewport: HTMLElement, container: HTMLElement, options?: Mind.Options) {
     this.viewport = viewport
     this.container = container
     this.options = WithDefault.options(options)
@@ -52,7 +52,7 @@ export class Graphic {
    * 获取当前可见的节点
    */
   private getVisibleNodes = () => {
-    const nodes: BadeMind.Node[] = []
+    const nodes: Mind.Node[] = []
 
     for (const cache of Array.from(this.cacheMap.values())) {
       if (cache.visible.node) {
@@ -69,10 +69,10 @@ export class Graphic {
 
   /**
    * 获取节点定位锚点（左上角）位置，可在节点绘制的时候确定其位置
-   * - 推荐使用`position:absolute;left:0;top:0;`配合`transform`来定位，避免出现绘制异常
-   * @param id 节点id
+   * - 推荐所有节点使用`position:absolute;left:0;top:0;`并且配合`transform`来定位，避免出现绘制异常
+   * @param id 节点对应id
    */
-  public getNodeAnchorCoordinate = (id: string): BadeMind.Coordinate | undefined => {
+  public getNodeAnchorCoordinate = (id: string): Mind.Coordinate | undefined => {
     const cache = this.cacheMap.get(id)
 
     if (!cache) {
@@ -118,7 +118,7 @@ export class Graphic {
     }
   }
 
-  private onTransform = (transform: BadeMind.Transform) => {
+  private onTransform = (transform: Mind.Transform) => {
     this.transform = transform
     // 直接修改 dom style
     this.container.style.transform = `translateX(${transform.x}px) translateY(${transform.y}px) scale(${transform.scale})`
@@ -163,6 +163,7 @@ export class Graphic {
 
   /**
    * 注销事件绑定
+   * - 请在销毁组件之前调用
    */
   public unbind = () => {
     this.unbindCache.forEach((dispose) => dispose())
@@ -185,11 +186,11 @@ export class Graphic {
 
   /**
    * 设定 `options`
-   * - 不会自动执行重渲染，如果改变的`options`需要重新计算布局等操作，推荐使用 setData 驱动数据重渲染
+   * - 函数不会自动执行重渲染，如果改变的`options`需要重新计算布局等操作，推荐使用 `setData` 驱动数据重渲染
    * @param options 设定选项
    * @param isMerge 是否与之前的`options`做合并操作
    */
-  public setOptions = (options?: BadeMind.Options, isMerge = false) => {
+  public setOptions = (options?: Mind.Options, isMerge = false) => {
     if (isMerge) {
       this.options = merge({}, this.options, options || {})
     } else {
@@ -202,13 +203,13 @@ export class Graphic {
   /**
    * 生成拖动控制器
    * - 根节点不可拖拽
-   * - 当前暂时只有`BadeMind.ChildAlignMode.heirCenter`布局算法支持拖拽功能
+   * - 当前暂时只有`Mind.ChildAlignMode.structured`布局算法支持拖拽功能
    * @param drag 拖动节点node对象或id
    * @return
    * - 当root（没有调用`setData`）不存在时，或者`drag`为根节点时，返回`undefined`
    * - 正常情况返回 `Drag` 类对象
    */
-  public dragControllerBuilder = (drag: BadeMind.Node | string) => {
+  public dragControllerBuilder = (drag: Mind.Node | string) => {
     const dragNode = typeof drag === 'string' ? this.cacheMap.get(drag)?.node : drag
 
     if (this.root && dragNode && dragNode.id !== this.root.node.id) {
@@ -227,7 +228,7 @@ export class Graphic {
   /**
    * 获取渲染层尺寸
    */
-  public getLayoutSize = (): BadeMind.Size | undefined => {
+  public getLayoutSize = (): Mind.Size | undefined => {
     const root = this.cacheMap.get(this.root?.node?.id || '')
     if (root) {
       return root.layoutSize
@@ -240,53 +241,53 @@ export class Graphic {
    * 获取`id`对应节点
    * @param id 节点`id`
    */
-  public getNode = (id: string): BadeMind.Node | undefined => this.cacheMap.get(id)?.node
+  public getNode = (id: string): Mind.Node | undefined => this.cacheMap.get(id)?.node
 
   /**
    * 获取`id`对应节点父级
    * @param id 节点`id`
    */
-  public getParent = (id: string): BadeMind.Node | undefined => this.cacheMap.get(id)?.parent
+  public getParent = (id: string): Mind.Node | undefined => this.cacheMap.get(id)?.parent
 
   /**
    * 获取`id`对应节点渲染方位
    * @param id 节点`id`
    */
-  public getNodeOrientation = (id: string): BadeMind.Orientation | undefined =>
+  public getNodeOrientation = (id: string): Mind.Orientation | undefined =>
     this.cacheMap.get(id)?.orientation
 
   /**
    * 主动设置位移缩放
    * - 会与之前的`transform`做深度合并
    * - 请注意：`setTransform` 之后 `onTransformChange` 事件依旧会触发
-   * - 此方法不受 `zoomExtent.translate` 限制
+   * - 此方法不受 `zoomExtent.translate`、`zoomExtent.scale` 限制
    * @param transform 位移缩放数据
    * @param duration 周期，如果配置，则执行变换会附带动画效果
    */
-  public setTransform = (transform: Partial<BadeMind.Transform>, duration?: number) => {
+  public setTransform = (transform: Partial<Mind.Transform>, duration?: number) => {
     this.transform = merge({}, this.transform, transform)
     this.zoom.setTransform(this.transform, duration)
   }
 
   /**
-   * 位移
+   * 设定位移
    * - 此方法受到 `zoomExtent.translate` 限制
    * @param translate 位移差(屏幕尺度)
    * @param duration 周期，如果配置，则执行变换会附带动画效果
    */
-  public translate = (translate: BadeMind.Coordinate, duration?: number) => {
+  public translate = (translate: Mind.Coordinate, duration?: number) => {
     this.zoom.translate(translate, duration)
   }
 
   /**
-   * 缩放
+   * 设定缩放
    * - 此方法受到 `zoomExtent.translate` 限制
    * - 此方法受到 `zoomExtent.scale` 限制
    * @param scale 缩放比
    * @param point 缩放相对点（如不配置或为`undefined`，则默认相对于`viewport`中心缩放）
    * @param duration 动画周期，如配置，则位移会附带动画效果
    */
-  public scale = (scale: number, point?: BadeMind.Coordinate, duration?: number) => {
+  public scale = (scale: number, point?: Mind.Coordinate, duration?: number) => {
     this.zoom.scale(scale, point, duration)
   }
 
@@ -302,8 +303,8 @@ export class Graphic {
   public nodeTranslateTo = (
     config: {
       id: string
-      diff: BadeMind.Coordinate
-      relative: BadeMind.Relative
+      diff: Mind.Coordinate
+      relative: Mind.Relative
     },
     duration?: number
   ) => {
@@ -325,22 +326,22 @@ export class Graphic {
   /**
    * 获取位移缩放信息
    */
-  public getTransform = (): BadeMind.Transform => ({ ...this.transform })
+  public getTransform = (): Mind.Transform => ({ ...this.transform })
 
   /**
-   * 设置锚点
-   * @param id 锚定节点id
+   * 设置锚点节点
+   * @param id 锚定节点id(如不设定，则清空锚点，根节点居中，缩放比归一)
    */
   public setAnchor = (id?: string) => {
     this.anchor = id
   }
   /**
    * 设置/更新数据，启动重渲染
-   * - 在重计算定位时，将保持 anchor 对应节点在屏幕上的相对位置不变
-   * - 如果 anchor 没有设定，或者找不到对应节点，则，根节点居中，缩放比重置为1
+   * - 在重计算定位时，将保持 `anchor` 对应节点在屏幕上的相对位置不变
+   * - 如果 `anchor` 没有设定，或者找不到对应节点，则，根节点居中，缩放比重置为1
    * @param root 根数据
    */
-  public setData = (root: BadeMind.Root) => {
+  public setData = (root: Mind.Root) => {
     this.root = root
     // 计算布局，定位锚点
     this.layout()

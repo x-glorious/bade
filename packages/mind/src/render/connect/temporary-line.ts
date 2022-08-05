@@ -2,7 +2,7 @@ import Classnames from 'classnames'
 import * as D3 from 'd3'
 
 import { withPrefix } from '../../helper/with-prefix'
-import { BadeMind } from '../../index'
+import { Mind } from '../../index'
 import { getPathRender } from './get-path-render'
 import { PathClassName, SvgClassName } from './index'
 
@@ -10,20 +10,20 @@ export class TemporaryLine {
   private svg: D3.Selection<D3.BaseType, unknown, null, undefined>
   private g: D3.Selection<D3.BaseType, unknown, null, undefined>
   private path: D3.Selection<D3.BaseType, unknown, null, undefined>
-  private cacheMap: BadeMind.CacheMap
-  private options: Required<BadeMind.Options>
+  private cacheMap: Mind.CacheMap
+  private options: Required<Mind.Options>
 
   constructor(
     container: HTMLElement,
-    cacheMap: BadeMind.CacheMap,
-    options: Required<BadeMind.Options>
+    cacheMap: Mind.CacheMap,
+    options: Required<Mind.Options>
   ) {
     this.createPathElement(container)
     this.options = options
     this.cacheMap = cacheMap
   }
 
-  public render = (link?: { source: BadeMind.Coordinate; target: BadeMind.Coordinate }) => {
+  public render = (link?: { source: Mind.Coordinate; target: Mind.Coordinate }) => {
     this.path.attr(
       'd',
       link

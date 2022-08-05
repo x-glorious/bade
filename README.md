@@ -1,10 +1,6 @@
-<img title="" src="./doc/icon.png" alt="" data-align="center" width="164">
+# Bade
 
----
-
-<h1 align="center">Bade</h1>
-
-**可视化库集合**
+**Bade可视化库集合**
 
 - `bade-mind` 脑图、思维导图`js`核心
 
@@ -60,5 +56,3 @@ npx lerna publish
 ```shell
 npm run demo
 ```
-
-

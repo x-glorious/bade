@@ -1,55 +1,102 @@
 # bade-mind-react
 
-**`bade-mind`** React 框架封装库
+**`bade-mind`** React 框架封装库  
 
-- **实现**了节点的`sizeof`函数，能够自动测量节点尺寸，并添加缓存功能
+- **实现**了节点的`sizeof`函数，能够自动测量节点尺寸，并添加缓存功能 ，用户只需要负责渲染节点即可
 
-- **增加**滚动条交互
+- **增加**滚动条交互  
 
-- **增加**滚轮手势交互
+- **增加**滚轮手势交互  
 
-- **实现**拖动功能
-
-- 当前**内置布局暂时只有**`BadeMind.ChildAlignMode.structured`布局算法支持拖拽功能
+- **实现**拖拽功能（内置布局只有`structured`支持拖拽）
 
 ## Installation
-
-### NPM
 
 ```shell
 npm install bade-mind-react
 ```
 
-## Usage
+## Simple demo
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+    <title>bade-mind-react demo</title>
+    <style>
+        body,#root{
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 定义链接线样式 */
+        #root .mind__lines{
+            stroke: #474b4c;
+            stroke-width: 3px;
+        }
+
+        .node{
+            font-size: 16px;
+            color: white;
+            padding: 8px 12px;
+            background: #1f2623;
+            border-radius: 8px;
+            box-shadow: 2px 2px 8px #666;
+            position: relative;
+        }
+
+        .fold{
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: red;
+            right: 0;
+            top: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script src="./simple-usage.tsx" type="module"></script>
+</body>
+</html>
+```
 
 ```tsx
 import * as React from 'react'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import ReactDom from 'react-dom'
 
-import { BadeMind, BadeMindReact } from 'bade-mind-react'
+import { Mind, MindReact } from 'bade-mind-react'
 
-const root: BadeMindReact.Root = {
+const root: MindReact.Root = {
   negative: [
     {
-      attachData: 'Negative 1 leaf',
+      attachData: 'negative',
       id: 'n-1-l'
     }
   ],
+  // negative: [],
   node: {
-    attachData: 'Root',
+    attachData: 'root',
     id: 'root'
   },
   positive: [
     {
-      attachData: 'Positive 1 leaf',
+      attachData: 'positive',
       id: 'p-1-l'
     }
   ]
 }
 
 const generateChildren = () => {
-  const result: BadeMindReact.Node[] = []
+  const result: MindReact.Node[] = []
   const num = Math.ceil(3 * Math.random())
   for (let counter = 0; counter < num; counter++) {
     result.push({
@@ -62,36 +109,44 @@ const generateChildren = () => {
 }
 
 const Render = (props: {
-  node: BadeMind.Node
+  node: Mind.Node
   onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
+  onFold: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
 }) => {
-  const { node, onClick } = props
+  const { node, onClick, onFold } = props
   return (
     <div className={'node'} onClick={onClick}>
       {node.attachData}
+      <div
+        onClick={(e) => {
+          onFold(e)
+          e.stopPropagation()
+        }}
+        className={'fold'}
+      />
     </div>
   )
 }
 
-const options: BadeMind.Options = {
-  nodeSeparate: 20,
-  rankSeparate: 60,
-  childAlignMode: BadeMind.ChildAlignMode.structured
+const options: Mind.Options = {
+  childAlignMode: Mind.ChildAlignMode.structured,
+  lineStyle: Mind.LinkStyle.bezier,
+  nodeSeparate: 80,
+  rankSeparate: 100
 }
 
 const Demo = () => {
-  const [data, setData] = useState<BadeMind.Root>(root)
+  const [data, setData] = useState<MindReact.Root>(root)
   const [anchor, setAnchor] = useState<string | undefined>()
 
-  // 拖动结束事件
-  const onDragEnd = useCallback<BadeMindReact.DragEndEvent>(
+  const onDragEnd = useCallback<MindReact.DragEndEvent>(
     (event) => {
       const { attach, node, original } = event
       if (attach && attach.index >= 0) {
-        let children: BadeMindReact.Node[] = []
+        let children: MindReact.Node[] = []
         // 如果为根节点
         if (attach.parent.id === data.node.id) {
-          if (attach.orientation === BadeMind.Orientation.positive) {
+          if (attach.orientation === Mind.Orientation.positive) {
             children = data.positive = data.positive || []
           } else {
             children = data.negative = data.negative || []
@@ -110,7 +165,7 @@ const Demo = () => {
         // 原始父节点为根节点
         if (original.parent.id === data.node.id) {
           originalPlaceNodes =
-            original.orientation === BadeMind.Orientation.positive ? data.positive : data.negative
+            original.orientation === Mind.Orientation.positive ? data.positive : data.negative
         } else {
           originalPlaceNodes = original.parent.children
         }
@@ -126,9 +181,8 @@ const Demo = () => {
     },
     [data]
   )
-
   return (
-    <BadeMindReact.Graphic
+    <MindReact.View
       data={data}
       anchor={anchor}
       scrollbar={true}
@@ -148,6 +202,17 @@ const Demo = () => {
               })
             }
           }}
+          onFold={() => {
+            setAnchor(node.id)
+            if (node.id === data.node.id) {
+              node.fold = []
+            } else {
+              node.fold = !node.fold
+            }
+            setData((pre) => {
+              return { ...pre }
+            })
+          }}
         />
       )}
       options={options}
@@ -157,28 +222,52 @@ const Demo = () => {
 ReactDom.render(<Demo />, document.getElementById('root'))
 ```
 
-**Result**
+## API
 
-![usage.png](./docs/usage.png)
-
-## Export
-
-### BadeMind
+### Mind
 
 组件依赖的`bade-mind`库导出
 
-### BadeMindReact
+### MindReact
 
-#### Node
+组件内部已自动实现`sizeof`函数，故而不需要用户再次处理
 
-组件内部已自动实现`sizeof`函数，故而不需要用户配置
+组件对`Mind`原有类型进行了一定的修改、拓展
+
+### MindReact.View
+
+脑图可视化组件
+
+#### Props
+
+| 参数             | 类型                  | 默认值       | 必填  | 说明                                                                                                          |
+|:-------------- |:------------------- | --------- |:---:|:----------------------------------------------------------------------------------------------------------- |
+| options        | Mind.Options        | undefined | 否   | mind配置项<br />- 仅做浅比较，引用出现改变则会引起重新绘制                                                                         |
+| data           | Root                | 无         | 是   | 脑图结构数据<br />- 做浅比较，引用出现改变则重新绘制<br />- 如果节点**长宽固定值**，则，请直接设置 size，避免性能损耗                                     |
+| render         | Render              | 无         | 是   | 节点渲染器<br/>- 做浅比较，引用出现改变则重新绘制<br/>- 请在节点**第一次渲染时就确定其尺寸**，当节点尺寸改变时，需要修改`data`引用，唤起重计算<br/>- 请保持镜像节点尺寸与源节点尺寸一致 |
+| anchor         | string              | undefined | 否   | 渲染锚点数据<br />- 在启动重渲染时保持 anchor 对应节点在屏幕上的相对位置不变<br/>- 如不设定，则清空锚点，根节点居中，缩放比归一                                 |
+| scrollbar      | boolean             | false     | 否   | 是否展示滚动条<br />- 当展示滚动条时，将会自动限定位移区域<br />- 当隐藏滚动条时，位移范围无限制                                                    |
+| wheelMoveSpeed | number              | 0.5       | 否   | 滚轮移动速度                                                                                                      |
+| className      | string              | undefined | 否   | 注入到根上的 `class`                                                                                              |
+| style          | React.CSSProperties | undefined | 否   | 注入到根上的 `style`                                                                                              |
+
+#### Events
+
+| 事件名         | 事件类型                         | 必填  | 说明                                                                          |
+|:----------- |:---------------------------- |:---:|:--------------------------------------------------------------------------- |
+| onUpdated   | (mind: Mind.Graphic) => void | 否   | 图形更新完成<br/>- 由 data 和 options 改变所引起，脑图控制对象内部状态刷新<br/>- 即，此时，脑图所有的状态以及渲染已经完成 |
+| onDragStart | DragStartEvent               | 否   | 拖拽开始事件                                                                      |
+| onDrag      | DragEvent                    | 否   | 拖拽中事件                                                                       |
+| onDragEnd   | DragEndEvent                 | 否   | 拖拽结束事件                                                                      |
+
+### Node
 
 ```tsx
-interface Node extends Omit<BadeMind.Node, 'sizeof' | 'children'> {
+interface Node extends Omit<Mind.Node, 'sizeof' | 'children'> {
     /**
      * 当设置 size 时，将会禁止自动测量，提升速率
      */
-    size?: BadeMind.Size
+    size?: Mind.Size
     /**
      * 节点是否受到保护（超出可视区域不会被销毁，但会设置`visible=hidden`）
      * @default false
@@ -212,7 +301,7 @@ interface Node extends Omit<BadeMind.Node, 'sizeof' | 'children'> {
 }
 ```
 
-#### Root
+### Root
 
 ```tsx
 interface Root {
@@ -222,148 +311,83 @@ interface Root {
 }
 ```
 
-#### GraphicProps
+### Render
+
+节点渲染器
 
 ```tsx
-export interface GraphicProps {
-    /**
-     * bade mind 配置项
-     * - 做浅比较，引用出现改变则重新绘制
-     */
-    options?: BadeMind.Options
-    /**
-     * 脑图结构数据
-     * - 做浅比较，引用出现改变则重新绘制
-     * - html 值将由组件自动注入到对象中（不改变对象引用，只是注入值）
-     * - 如果节点**长宽固定值**，则，请直接设置 size，避免性能损耗
-     */
-    data: Root
-    /**
-     * 节点渲染器
-     * - 做浅比较，引用出现改变则重新绘制
-     * - 请在节点**第一次渲染时就确定其尺寸**，当节点尺寸改变时，需要修改`data`引用，唤起重计算
-     * - 请保持镜像节点尺寸与源节点尺寸一致
-     * @param data 节点数据
-     * @param mirror 渲染节点是否为镜像节点（拖拽）
-     */
-    render: Render
-    /**
-     * 渲染锚点数据
-     * - 在启动重渲染时保持 anchor 对应节点在屏幕上的相对位置不变
-     */
-    anchor?: string
-    /**
-     * 是否展示滚动条
-     * - 当展示滚动条时，将会自动限定位移区域
-     * - 当隐藏滚动条时，位移范围无限制
-     * @default false
-     */
-    scrollbar?: boolean
-    /**
-     * 图形更新完成
-     * - 由 data 和 options 改变所引起，脑图控制对象内部状态刷新
-     * - 即，此时，脑图所有的状态以及渲染已经完成
-     * @param mind 脑图控制对象
-     */
-    onUpdated?: (mind: BadeMind.Graphic) => void
-    /**
-     * 注入到根上的 `class`
-     */
-    className?: string
-    /**
-     * 注入到根上的 `style`
-     */
-    style?: React.CSSProperties
-    /**
-     * 滚轮移动速度
-     * @default 0.5
-     */
-    wheelMoveSpeed?: number
-    /**
-     * 拖拽开始事件
-     * @param node 拖拽的节点
-     */
-    onDragStart?: DragStartEvent
-    /**
-     * 拖拽中事件
-     * @param event.node 拖拽的节点
-     * @param event.attach 拖拽节点关联的节点（关联父级），可能为空
-     * @param event.position 拖拽节点镜像中心当前位置
-     * @param event.orientation 拖拽节点当前位于哪个区域（位于根节点区域时为空，此时无法附着在任何一个节点上）
-     */
-    onDrag?: DragEvent
-    /**
-     * 拖拽结束事件
-     * @param event.node 拖拽的节点
-     * @param event.attach 拖拽节点最终关联的节点（关联父级），可能为空
-     * @param event.orientation 拖拽节点当前最终位于哪个区域（位于根节点区域时为空，此时无法附着在任何一个节点上）
-     * @param event.id 拖拽节点位于最终关联节点子代（关联父级）中的目标位置（-1代表无需改变位置）（需要注意的是，关联的父节点可能仍然是拖动节点自身的父节点）
-     */
-    onDragEnd?: DragEndEvent
-}
+type Render = (data: Node, mirror: boolean) => React.ReactNode
 ```
 
-#### GraphicRef
+- **@param** `data` 节点数据
 
-```tsx
-interface GraphicRef {
-    mind?: BadeMind.Graphic
-}
-```
+- **@param** `mirror` 是否为镜像节点（拖拽所产生的）渲染
 
-#### Render
+### DragStartEvent
 
-```tsx
-type Render = (data: Node, mirror: boolean) => React.ReactNode 
-```
-
-#### DragStartEvent
+拖拽节点开始事件
 
 ```tsx
 type DragStartEvent = (event: { node: Node }) => void
 ```
 
-#### DragEvent
+- **@param** `node` 拖拽的节点
+
+### DragEvent
+
+节点拖拽中事件
 
 ```tsx
 type DragEvent = (event: {
     node: Node
     attach:
-    | {
-      parent: Node
-      orientation: BadeMind.Orientation
-    }
-    | undefined
-    mirrorPosition: BadeMind.Coordinate
+      | {
+          parent: Node
+          orientation: Mind.Orientation
+        }
+      | undefined
+    mirrorPosition: Mind.Coordinate
 }) => void
 ```
 
-#### DragEndEvent
+* **@param** `event.node` 拖拽的节点  
+* **@param** `event.attach` 拖拽节点关联的节点（关联父级），可能为空  
+* **@param** `event.position` 拖拽节点镜像中心当前位置  
+* **@param** `event.orientation `拖拽节点当前位于哪个区域（位于根节点区域时为空，此时无法附着在任何一个节点上）
+
+### DragEndEvent
+
+拖拽结束事件
 
 ```tsx
 type DragEndEvent = (event: {
     node: Node
     attach:
-    | {
-      parent: Node
-      orientation: BadeMind.Orientation
-      index: number
-    }
-    | undefined
+      | {
+          parent: Node
+          orientation: Mind.Orientation
+          index: number
+        }
+      | undefined
     original: {
       parent: Node
-      orientation: BadeMind.Orientation
+      orientation: Mind.Orientation
     }
 }) => void
 ```
+
+* **@param** `event.node` 拖拽的节点  
+* **@param** `event.attach` 拖拽节点最终关联的节点（关联父级），可能为空  
+* **@param** `event.orientation` 拖拽节点当前最终位于哪个区域（位于根节点区域时为空，此时无法附着在任何一个节点上）  
+* **@param** `event.id` 拖拽节点位于最终关联节点子代（关联父级）中的目标位置（-1代表无需改变位置）（需要注意的是，关联的父节点可能仍然是拖动节点自身的父节点）
 
 ## Tips
 
 ### 渲染初始定位
 
-可使用`onUpdated`在渲染完成之后，改变位移缩放等
+可使用`onUpdated`在渲染完成之后，改变位移缩放等  
 
-- 谨记，`onUpdated`会在每一次渲染更新完成之后调用
+- 谨记，`onUpdated`会在每一次**脑图渲染更新完成**之后调用  
 
 ```tsx
 onUpdated={(mind) => {
@@ -376,8 +400,8 @@ onUpdated={(mind) => {
         },
         id: 'root',
         relative: {
-            x: BadeMind.RelativeX.middle,
-            y: BadeMind.RelativeY.top
+            x: Mind.RelativeX.middle,
+            y: Mind.RelativeY.top
         }
     })
 }

@@ -5,7 +5,7 @@ import { Helper } from './helper'
 import { Process as ProcessModule } from './process'
 import { DraggableLayout as DraggableLayoutClass } from './process/layout/type'
 
-export namespace BadeMind {
+export namespace Mind {
   type ValueOf<T> = T[keyof T]
 
   export interface Size {
@@ -18,7 +18,7 @@ export namespace BadeMind {
     y: number
   }
 
-  export type CacheMap = Map<string, BadeMind.NodeCache>
+  export type CacheMap = Map<string, Mind.NodeCache>
 
   export const ChildAlignMode = {
     /**
@@ -115,7 +115,7 @@ export namespace BadeMind {
     /**
      * 节点自身数据
      */
-    node: BadeMind.Node
+    node: Mind.Node
   }
 
   export interface Range<T> {
@@ -142,17 +142,17 @@ export namespace BadeMind {
      * 链接
      */
     link: {
-      source: BadeMind.Coordinate
-      target: BadeMind.Coordinate
+      source: Mind.Coordinate
+      target: Mind.Coordinate
     }
     /**
      * 关联节点
      */
-    node: BadeMind.Node
+    node: Mind.Node
     /**
      * 拖动节点关联到目标节点的区域
      */
-    orientation: BadeMind.Orientation
+    orientation: Mind.Orientation
   }
 
   export interface NodeCache {
@@ -215,7 +215,7 @@ export namespace BadeMind {
      * - 每一次 `setData` 后都必定会调用此事件
      * @param nodes 可见节点数组(节点都是对`setData`中节点数据的引用，请注意根节点设置`children`无效)
      */
-    onNodeVisibleChange?: (nodes: BadeMind.Node[]) => void
+    onNodeVisibleChange?: (nodes: Mind.Node[]) => void
   }
 
   export interface Line {
@@ -293,6 +293,11 @@ export namespace BadeMind {
   }
 
   export interface Options {
+    /**
+     * 禁止连接线裁剪渲染
+     * @default false
+     */
+    disableLinesTailor?: boolean
     /**
      * 渲染方向
      * - positive 在 x 模式下渲染在右侧，y 模式下渲染在上侧

@@ -1,7 +1,7 @@
 import * as D3 from 'd3'
 
 import { Helper } from '../../helper'
-import { BadeMind } from '../../index'
+import { Mind } from '../../index'
 import { getPathRender } from './get-path-render'
 import { line } from './line'
 
@@ -10,16 +10,20 @@ export const GroupClassName = Helper.withPrefix('group')
 export const PathClassName = Helper.withPrefix('line')
 
 export const connect = (context: {
-  cacheMap: BadeMind.CacheMap
-  options: Required<BadeMind.Options>
-  root: BadeMind.Root
+  cacheMap: Mind.CacheMap
+  options: Required<Mind.Options>
+  root: Mind.Root
   container: HTMLElement
 }) => {
   const { cacheMap, options, root, container } = context
   const rootCache = cacheMap.get(root.node.id)!
 
-  const data: BadeMind.PathData[] = Array.from(cacheMap.values())
-    .filter((cache) => cache.visible.lineAttachParent && cache.node.id !== root.node.id)
+  const data: Mind.PathData[] = Array.from(cacheMap.values())
+    .filter(
+      (cache) =>
+        (cache.visible.lineAttachParent || options.disableLinesTailor) &&
+        cache.node.id !== root.node.id
+    )
     .map((cache) => ({
       node: cache.node,
       source: cache.line.source,
@@ -46,11 +50,11 @@ export const connect = (context: {
     .style('pointer-events', 'none')
     .selectChild(`g.${GroupClassName}`)
     .selectAll('path')
-    .data(data, (d: BadeMind.PathData) => d.node.id)
+    .data(data, (d: Mind.PathData) => d.node.id)
     .join('path')
-    .attr('id', (d: BadeMind.PathData) => Helper.getSvgPathId(d.node.id))
-    .attr('d', (d: BadeMind.PathData) => {
-      const context: BadeMind.PathRenderContext = {
+    .attr('id', (d: Mind.PathData) => Helper.getSvgPathId(d.node.id))
+    .attr('d', (d: Mind.PathData) => {
+      const context: Mind.PathRenderContext = {
         ...d,
         cacheMap,
         options

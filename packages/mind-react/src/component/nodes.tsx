@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { useCallback, useMemo, useRef, useState } from 'react'
 
-import { BadeMind } from 'bade-mind'
+import { Mind } from  'bade-mind'
 import Classnames from 'classnames'
 
 import { useDrag } from '../hook/use-drag'
-import { BadeMindReact } from '../index'
+import { MindReact } from '../index'
 import { classNameWrapper } from '../tools/class-name-wrapper'
 
 // @ts-ignore-next-line
@@ -13,16 +13,16 @@ import Style from './index.module.scss'
 
 interface NodesProps {
   renderChangeToggle: number
-  mind?: BadeMind.Graphic
-  data: BadeMindReact.Root
-  render: BadeMindReact.Render
-  onDragStart?: BadeMindReact.DragStartEvent
-  onDrag?: BadeMindReact.DragEvent
-  onDragEnd?: BadeMindReact.DragEndEvent
+  mind?: Mind.Graphic
+  data: MindReact.Root
+  render: MindReact.Render
+  onDragStart?: MindReact.DragStartEvent
+  onDrag?: MindReact.DragEvent
+  onDragEnd?: MindReact.DragEndEvent
 }
 
 interface SizeCache {
-  size: BadeMind.Size
+  size: Mind.Size
   updateToDate: boolean
 }
 export const Nodes = (props: NodesProps) => {
@@ -37,7 +37,7 @@ export const Nodes = (props: NodesProps) => {
       const preSizeCacheMap = new Map(sizeCacheMap.current)
       sizeCacheMap.current = new Map<string, SizeCache>()
 
-      return BadeMind._Helper.rootToNodeArray(data as BadeMind.Root, (node) => {
+      return Mind._Helper.rootToNodeArray(data as Mind.Root, (node) => {
         // 缓存中没有，则创建
         if (!preSizeCacheMap.has(node.id)) {
           sizeCacheMap.current.set(node.id, {
@@ -51,7 +51,7 @@ export const Nodes = (props: NodesProps) => {
           pre.updateToDate = false
           sizeCacheMap.current.set(node.id, pre)
         }
-      }) as BadeMindReact.Node[]
+      }) as MindReact.Node[]
     }
 
     return []
@@ -93,7 +93,7 @@ export const Nodes = (props: NodesProps) => {
       }
       // 当不需要更新尺寸的时候，直接使用缓存
       if (!needUpdateSize) {
-        ;(node as BadeMind.Node).sizeof = () => ({
+        ;(node as Mind.Node).sizeof = () => ({
           height: sizeCache.size.height,
           width: sizeCache.size.width
         })
@@ -123,7 +123,7 @@ export const Nodes = (props: NodesProps) => {
             data-node-draggable={String(draggable)}
             ref={(element) => {
               if (element && needUpdateSize) {
-                ;(node as BadeMind.Node).sizeof = () => {
+                ;(node as Mind.Node).sizeof = () => {
                   // 标识已经获取了最新数据
                   sizeCache.updateToDate = true
                   sizeCache.size.width = element.clientWidth

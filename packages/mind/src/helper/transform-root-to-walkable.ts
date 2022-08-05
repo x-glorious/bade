@@ -1,18 +1,18 @@
 import { merge } from 'lodash'
 
-import { BadeMind } from '../index'
+import { Mind } from '../index'
 
-export const transformRootToWalkable = (root: BadeMind.Root) => {
+export const transformRootToWalkable = (root: Mind.Root) => {
   const negative = root.negative || []
   const positive = root.positive || []
 
-  const shadowNode: BadeMind.Node = {
+  const shadowNode: Mind.Node = {
     ...root.node
   }
   shadowNode.children = [...negative, ...positive]
-  const cache = new Map<string, BadeMind.Orientation>()
-  negative.forEach((item) => cache.set(item.id, BadeMind.Orientation.negative))
-  positive.forEach((item) => cache.set(item.id, BadeMind.Orientation.positive))
+  const cache = new Map<string, Mind.Orientation>()
+  negative.forEach((item) => cache.set(item.id, Mind.Orientation.negative))
+  positive.forEach((item) => cache.set(item.id, Mind.Orientation.positive))
 
   return {
     getRootHeirOrientation: (id: string) => cache.get(id)!,

@@ -1,4 +1,4 @@
-import { BadeMind } from '../../../index'
+import { Mind } from '../../../index'
 import { DraggableLayout } from '../type'
 
 export const calcDropIndex: typeof DraggableLayout.calcDropIndex = (context) => {
@@ -9,7 +9,7 @@ export const calcDropIndex: typeof DraggableLayout.calcDropIndex = (context) => 
     return 0
   }
 
-  const vertical = options.direction === BadeMind.Direction.y
+  const vertical = options.direction === Mind.Direction.y
   const dragNodeJudgeValue = vertical ? dropPosition.x : dropPosition.y
 
   const getNodeJudgeValue = (id: string) => {

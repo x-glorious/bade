@@ -1,9 +1,9 @@
 import { Helper } from '../helper'
-import { BadeMind } from '../index'
+import { Mind } from '../index'
 import { Process } from './index'
 
 export class NodeValid implements Process.Lifecycle {
-  private root: BadeMind.Root
+  private root: Mind.Root
 
   start = (context: Process.StartContext) => {
     const { root } = context

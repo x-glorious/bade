@@ -1,11 +1,11 @@
 import * as dagre from 'dagre'
 
-import { BadeMind } from '../../index'
+import { Mind } from '../../index'
 
-export const generateDagreGraphic = (options: BadeMind.Options) => {
+export const generateDagreGraphic = (options: Mind.Options) => {
   const DirectionToRankdir = {
-    [BadeMind.Direction.x]: 'LR',
-    [BadeMind.Direction.y]: 'BT'
+    [Mind.Direction.x]: 'LR',
+    [Mind.Direction.y]: 'BT'
   }
 
   const graphic = new dagre.graphlib.Graph()

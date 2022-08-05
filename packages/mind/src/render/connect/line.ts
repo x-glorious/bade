@@ -1,12 +1,12 @@
 import * as D3 from 'd3'
 
-import { BadeMind } from '../../index'
+import { Mind } from '../../index'
 
-export const line: BadeMind.PathRender = (context) => {
+export const line: Mind.PathRender = (context) => {
   const radius = 12
 
   const { source, target, options } = context
-  const middle: BadeMind.Coordinate = {
+  const middle: Mind.Coordinate = {
     x: (source.x + target.x) / 2,
     y: (source.y + target.y) / 2
   }
@@ -16,7 +16,7 @@ export const line: BadeMind.PathRender = (context) => {
   let curveControl: [number, number] = [0, 0]
   let curveEnd: [number, number] = [0, 0]
   // x 轴分布
-  if (options.direction === BadeMind.Direction.x) {
+  if (options.direction === Mind.Direction.x) {
     // 同一 y 坐标，则，直线链接
     if (source.y === target.y) {
       return D3.line()([

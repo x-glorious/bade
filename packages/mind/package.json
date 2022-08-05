@@ -1,7 +1,7 @@
 {
   "name": "bade-mind",
   "version": "1.0.1",
-  "description": "Bade mind core",
+  "description": "",
   "main": "./lib/index.js",
   "module": "./lib/index.module.js",
   "types": "./lib/index.d.ts",
@@ -10,7 +10,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ordinaryP/bade/tree/main/packages/mind"
+    "url": "git+https://github.com/x-glorious/bade.git"
   },
   "scripts": {
     "test": "jest",
@@ -19,12 +19,7 @@
     "compile": "npm run clear && rollup -c",
     "compile:watch": "npm run clear && rollup -cw"
   },
-  "keywords": [
-    "mind",
-    "d3",
-    "custom",
-    "pure javascript"
-  ],
+  "keywords": ["mind","javascript","typescript","custom","render props","svg","dom","bade"],
   "author": "",
   "license": "ISC",
   "dependencies": {

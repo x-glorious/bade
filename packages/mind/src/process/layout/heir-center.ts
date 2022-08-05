@@ -1,15 +1,15 @@
 // 直系子代居中对齐布局
 import * as dagre from 'dagre'
 
-import { BadeMind } from '../../index'
+import { Mind } from '../../index'
 import { Process } from '../index'
 import { generateDagreGraphic } from './dagre'
 
 export class HeirCenterLayout implements Process.Lifecycle {
   private graphic: dagre.graphlib.Graph
-  private cacheMap: BadeMind.CacheMap
-  private root: BadeMind.Root
-  private options: Required<BadeMind.Options>
+  private cacheMap: Mind.CacheMap
+  private root: Mind.Root
+  private options: Required<Mind.Options>
 
   start = (context: Process.StartContext) => {
     const { options, root, cacheMap } = context
@@ -25,7 +25,7 @@ export class HeirCenterLayout implements Process.Lifecycle {
     this.graphic.setNode(node.id, cache.rect)
 
     if (parent) {
-      if (cache.orientation === BadeMind.Orientation.positive) {
+      if (cache.orientation === Mind.Orientation.positive) {
         this.graphic.setEdge(parent.id, node.id)
       } else {
         this.graphic.setEdge(node.id, parent.id)

@@ -7,14 +7,16 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "bootstrap": "./node_modules/.bin/lerna bootstrap"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/x-glorious/bade.git"
+  },
   "author": "",
   "license": "ISC",
-  "engines": {
-    "node": ">=12.22.1 <=14.18.1"
-  },
   "devDependencies": {
     "@lopatnov/rollup-plugin-uglify": "^2.1.2",
     "@rollup/plugin-commonjs": "^21.0.3",
+    "@rollup/plugin-node-resolve": "^13.3.0",
     "@typescript-eslint/eslint-plugin": "^5.17.0",
     "@typescript-eslint/parser": "^5.18.0",
     "buffer": "^6.0.3",
@@ -29,7 +31,7 @@
     "eslint-plugin-sort-keys-fix": "^1.1.2",
     "events": "^3.3.0",
     "exec-sh": "^0.4.0",
-    "jest": "^27.5.1",
+    "jest": "^28.1.2",
     "lerna": "^4.0.0",
     "node-sass": "^7.0.1",
     "parcel": "^2.4.1",
@@ -38,10 +40,12 @@
     "process": "^0.11.10",
     "rollup": "^2.70.1",
     "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-svelte": "^7.1.0",
     "rollup-plugin-typescript2": "^0.31.2",
     "rollup-pluginutils": "^2.8.2",
     "stream-browserify": "^3.0.0",
     "terser": "^5.12.1",
+    "ts-jest": "^28.0.5",
     "typescript": "^4.6.3"
   }
 }

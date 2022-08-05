@@ -1,13 +1,13 @@
 import { Helper } from '../helper'
-import { BadeMind } from '../index'
+import { Mind } from '../index'
 import { Process } from './index'
 
-export class Visible implements Process.Lifecycle<void, void, void, BadeMind.Visible> {
+export class Visible implements Process.Lifecycle<void, void, void, Mind.Visible> {
   private viewport: HTMLElement
-  private transform: BadeMind.Transform
-  private root: BadeMind.Root
-  private cacheMap: BadeMind.CacheMap
-  private options: Required<BadeMind.Options>
+  private transform: Mind.Transform
+  private root: Mind.Root
+  private cacheMap: Mind.CacheMap
+  private options: Required<Mind.Options>
   private getRootHeirOrientation: Process.getRootHeirOrientationFunc
 
   start = (context: Process.StartContext) => {
@@ -25,12 +25,12 @@ export class Visible implements Process.Lifecycle<void, void, void, BadeMind.Vis
    * - 使用次返回值得前提是，数据没有出现改变（也就是在viewport尺寸改变或者transform时可以使用）
    */
   end = () => {
-    const visibleChange: BadeMind.Visible = {
+    const visibleChange: Mind.Visible = {
       lineAttachParent: false,
       node: false
     }
 
-    const viewportSize: BadeMind.Size = {
+    const viewportSize: Mind.Size = {
       height: this.viewport.clientHeight,
       width: this.viewport.clientWidth
     }
@@ -60,7 +60,7 @@ export class Visible implements Process.Lifecycle<void, void, void, BadeMind.Vis
           return false
         }
 
-        const preVisible: BadeMind.Visible = {
+        const preVisible: Mind.Visible = {
           ...cache.visible
         }
 

@@ -1,10 +1,10 @@
 import * as React from 'react'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useState } from 'react'
 import ReactDom from 'react-dom'
 
-import { BadeMind, BadeMindReact } from '../lib'
+import { Mind, MindReact } from '../lib'
 
-const root: BadeMindReact.Root = {
+const root: MindReact.Root = {
   negative: [
     {
       attachData: 'negative',
@@ -13,7 +13,7 @@ const root: BadeMindReact.Root = {
   ],
   // negative: [],
   node: {
-    attachData: 'Bade',
+    attachData: 'root',
     id: 'root'
   },
   positive: [
@@ -25,7 +25,7 @@ const root: BadeMindReact.Root = {
 }
 
 const generateChildren = () => {
-  const result: BadeMindReact.Node[] = []
+  const result: MindReact.Node[] = []
   const num = Math.ceil(3 * Math.random())
   for (let counter = 0; counter < num; counter++) {
     result.push({
@@ -38,7 +38,7 @@ const generateChildren = () => {
 }
 
 const Render = (props: {
-  node: BadeMind.Node
+  node: Mind.Node
   onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
   onFold: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
 }) => {
@@ -57,25 +57,25 @@ const Render = (props: {
   )
 }
 
-const options: BadeMind.Options = {
-  childAlignMode: BadeMind.ChildAlignMode.structured,
-  lineStyle: BadeMind.LinkStyle.bezier,
+const options: Mind.Options = {
+  childAlignMode: Mind.ChildAlignMode.structured,
+  lineStyle: Mind.LinkStyle.bezier,
   nodeSeparate: 80,
   rankSeparate: 100
 }
 
 const Demo = () => {
-  const [data, setData] = useState<BadeMindReact.Root>(root)
+  const [data, setData] = useState<MindReact.Root>(root)
   const [anchor, setAnchor] = useState<string | undefined>()
 
-  const onDragEnd = useCallback<BadeMindReact.DragEndEvent>(
+  const onDragEnd = useCallback<MindReact.DragEndEvent>(
     (event) => {
       const { attach, node, original } = event
       if (attach && attach.index >= 0) {
-        let children: BadeMindReact.Node[] = []
+        let children: MindReact.Node[] = []
         // 如果为根节点
         if (attach.parent.id === data.node.id) {
-          if (attach.orientation === BadeMind.Orientation.positive) {
+          if (attach.orientation === Mind.Orientation.positive) {
             children = data.positive = data.positive || []
           } else {
             children = data.negative = data.negative || []
@@ -94,7 +94,7 @@ const Demo = () => {
         // 原始父节点为根节点
         if (original.parent.id === data.node.id) {
           originalPlaceNodes =
-            original.orientation === BadeMind.Orientation.positive ? data.positive : data.negative
+            original.orientation === Mind.Orientation.positive ? data.positive : data.negative
         } else {
           originalPlaceNodes = original.parent.children
         }
@@ -111,7 +111,7 @@ const Demo = () => {
     [data]
   )
   return (
-    <BadeMindReact.Graphic
+    <MindReact.View
       data={data}
       anchor={anchor}
       scrollbar={true}

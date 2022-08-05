@@ -1,13 +1,13 @@
 import * as D3 from 'd3'
 
 import { Helper } from '../helper'
-import { BadeMind } from '../index'
+import { Mind } from '../index'
 
 export class Zoom {
   private viewport: HTMLElement
   private controller = D3.zoom()
-  private callback?: (transform: BadeMind.Transform) => void
-  private event?: BadeMind.ZoomEvent
+  private callback?: (transform: Mind.Transform) => void
+  private event?: Mind.ZoomEvent
 
   constructor(viewport: HTMLElement) {
     this.viewport = viewport
@@ -18,7 +18,7 @@ export class Zoom {
     })
   }
 
-  public bind = (callback: (transform: BadeMind.Transform) => void, event: BadeMind.ZoomEvent) => {
+  public bind = (callback: (transform: Mind.Transform) => void, event: Mind.ZoomEvent) => {
     const { start, zoom, end } = event
     this.callback = callback
     this.event = event
@@ -27,7 +27,7 @@ export class Zoom {
       .call(
         this.controller
           .on('zoom', (e) => {
-            const transform: BadeMind.Transform = {
+            const transform: Mind.Transform = {
               scale: e.transform.k,
               x: e.transform.x,
               y: e.transform.y
@@ -41,14 +41,14 @@ export class Zoom {
       .call(this.controller.transform, D3.zoomIdentity)
   }
 
-  public syncZoomExtent = (size: BadeMind.Size) => {
+  public syncZoomExtent = (size: Mind.Size) => {
     this.controller.extent([
       [0, 0],
       [size.width, size.height]
     ])
   }
 
-  public syncZoomExtentOptions = (context: { options: Required<BadeMind.Options> }) => {
+  public syncZoomExtentOptions = (context: { options: Required<Mind.Options> }) => {
     const {
       options: { zoomExtent }
     } = context
@@ -69,7 +69,7 @@ export class Zoom {
     }
   }
 
-  public scale = (scale: number, point?: BadeMind.Coordinate, duration = 0) => {
+  public scale = (scale: number, point?: Mind.Coordinate, duration = 0) => {
     Helper.mircoTask(() => {
       if (duration) {
         D3.select(this.viewport)
@@ -82,7 +82,7 @@ export class Zoom {
     })
   }
 
-  public translate = (translate: BadeMind.Coordinate, duration = 0) => {
+  public translate = (translate: Mind.Coordinate, duration = 0) => {
     Helper.mircoTask(() => {
       if (duration) {
         D3.select(this.viewport)
@@ -95,7 +95,7 @@ export class Zoom {
     })
   }
 
-  public setTransform = (transform: BadeMind.Transform, duration = 0) => {
+  public setTransform = (transform: Mind.Transform, duration = 0) => {
     // 添加进入微任务队列，避免影响主计算流程
     Helper.mircoTask(() => {
       if (duration) {

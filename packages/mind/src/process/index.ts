@@ -1,5 +1,5 @@
 import { Zoom } from '../graphic/zoom'
-import { BadeMind } from '../index'
+import { Mind } from '../index'
 import { Anchor as AnchorProcess } from './anchor'
 import {
   DescendantCenterLayout as DescendantCenterLayoutProcess,
@@ -13,23 +13,23 @@ import { Size as SizeProcess } from './size'
 import { Visible as VisibleProcess } from './visible'
 
 export namespace Process {
-  export type getRootHeirOrientationFunc = (id: string) => BadeMind.Orientation
+  export type getRootHeirOrientationFunc = (id: string) => Mind.Orientation
   export interface EveryContext {
     /**
      * 当前处理节点缓存信息
      */
-    cache: BadeMind.NodeCache
+    cache: Mind.NodeCache
   }
 
   export interface StartContext {
     /**
      * 配置项
      */
-    options: Required<BadeMind.Options>
+    options: Required<Mind.Options>
     /**
      * 根数据
      */
-    root: BadeMind.Root
+    root: Mind.Root
     /**
      * 获取根直系子代的方位
      * @param id 直系子代 id
@@ -38,11 +38,11 @@ export namespace Process {
     /**
      * 缓存地图
      */
-    cacheMap: BadeMind.CacheMap
+    cacheMap: Mind.CacheMap
     /**
      * 上一次的缓存地图
      */
-    preCacheMap?: BadeMind.CacheMap
+    preCacheMap?: Mind.CacheMap
     /**
      * 可视窗口
      */
@@ -54,7 +54,7 @@ export namespace Process {
     /**
      * 位移/缩放配置
      */
-    transform: BadeMind.Transform
+    transform: Mind.Transform
     /**
      * 配置锚点
      */
@@ -104,11 +104,11 @@ export namespace Process {
 
   export const NodeValid = NodeValidProcess
 
-  export const getLayoutProcess = (options: Required<BadeMind.Options>) => {
+  export const getLayoutProcess = (options: Required<Mind.Options>) => {
     const matchMap = {
-      [BadeMind.ChildAlignMode.heirCenter]: HeirCenterLayoutProcess,
-      [BadeMind.ChildAlignMode.descendantCenter]: DescendantCenterLayoutProcess,
-      [BadeMind.ChildAlignMode.structured]: StructuredLayoutProcess
+      [Mind.ChildAlignMode.heirCenter]: HeirCenterLayoutProcess,
+      [Mind.ChildAlignMode.descendantCenter]: DescendantCenterLayoutProcess,
+      [Mind.ChildAlignMode.structured]: StructuredLayoutProcess
     }
 
     return options.layoutProcess ? options.layoutProcess : matchMap[options.childAlignMode!]

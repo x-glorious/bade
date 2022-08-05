@@ -1,11 +1,11 @@
 import { Helper } from '../helper'
-import { BadeMind } from '../index'
+import { Mind } from '../index'
 import { Process } from './index'
 
 export class Line implements Process.Lifecycle {
-  private cacheMap: BadeMind.CacheMap
-  private options: BadeMind.Options
-  private root: BadeMind.Root
+  private cacheMap: Mind.CacheMap
+  private options: Mind.Options
+  private root: Mind.Root
   private getRootHeirOrientation: Process.getRootHeirOrientationFunc
 
   start = (context: Process.StartContext) => {
@@ -32,11 +32,11 @@ export class Line implements Process.Lifecycle {
         if (cache.parent) {
           const parentCache = this.cacheMap.get(cache.parent.id)!
 
-          if (this.options.direction === BadeMind.Direction.x) {
+          if (this.options.direction === Mind.Direction.x) {
             cache.line.source.y = parentCache.rect.y
             cache.line.target.y = cache.rect.y
             // 节点位于父级右侧
-            if (cache.orientation === BadeMind.Orientation.positive) {
+            if (cache.orientation === Mind.Orientation.positive) {
               cache.line.source.x = parentCache.rect.x + parentCache.rect.width / 2
               cache.line.target.x = cache.rect.x - cache.rect.width / 2
             }
@@ -49,7 +49,7 @@ export class Line implements Process.Lifecycle {
             cache.line.source.x = parentCache.rect.x
             cache.line.target.x = cache.rect.x
             // 节点位于上方
-            if (cache.orientation === BadeMind.Orientation.positive) {
+            if (cache.orientation === Mind.Orientation.positive) {
               cache.line.source.y = parentCache.rect.y - parentCache.rect.height / 2
               cache.line.target.y = cache.rect.y + cache.rect.height / 2
             }

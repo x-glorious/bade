@@ -5,14 +5,14 @@
 import * as dagre from 'dagre'
 
 import { Helper } from '../../helper'
-import { BadeMind } from '../../index'
+import { Mind } from '../../index'
 import { Process } from '../index'
 import { generateDagreGraphic } from './dagre'
 
 export class DescendantCenterLayout implements Process.Lifecycle {
-  private options: BadeMind.Options
-  private cacheMap: BadeMind.CacheMap
-  private root: BadeMind.Root
+  private options: Mind.Options
+  private cacheMap: Mind.CacheMap
+  private root: Mind.Root
   private getRootHeirOrientation: Process.getRootHeirOrientationFunc
   start = (context: Process.StartContext) => {
     const { options, cacheMap, root, getRootHeirOrientation } = context
@@ -28,7 +28,7 @@ export class DescendantCenterLayout implements Process.Lifecycle {
     const { cache } = context
     const { node } = cache
     // 区域矩形初始化为本身尺寸，用作计算
-    const localityRect: BadeMind.Size & BadeMind.Coordinate = {
+    const localityRect: Mind.Size & Mind.Coordinate = {
       height: cache.rect.height,
       width: cache.rect.width,
       x: 0,
@@ -64,7 +64,7 @@ export class DescendantCenterLayout implements Process.Lifecycle {
       // 子节点区域矩形信息
       const localityRect = cache.processCache.descendantCenterLayout.localityRect
       // 子节点区域在父级区域矩形信息中的位置信息
-      const localityRectInParent: BadeMind.Size & BadeMind.Coordinate = {
+      const localityRectInParent: Mind.Size & Mind.Coordinate = {
         height: localityRect.height,
         width: localityRect.width,
         x: 0,
@@ -73,7 +73,7 @@ export class DescendantCenterLayout implements Process.Lifecycle {
       cache.processCache.descendantCenterLayout.localityRectInParent = localityRectInParent
 
       graphic.setNode(child.id, localityRectInParent)
-      if (cache.orientation === BadeMind.Orientation.positive) {
+      if (cache.orientation === Mind.Orientation.positive) {
         graphic.setEdge(node.id, child.id)
       } else {
         graphic.setEdge(child.id, node.id)
@@ -123,17 +123,17 @@ export class DescendantCenterLayout implements Process.Lifecycle {
           const parentCache = this.cacheMap.get(cache.parent.id)!
           // 坐标系原点
           const origin = parentCache.processCache.descendantCenterLayout
-            .origin as BadeMind.Coordinate
+            .origin as Mind.Coordinate
           // 自身所领导的区域容器位于父容器的矩形信息
-          const localityRectInParent: BadeMind.Size & BadeMind.Coordinate =
+          const localityRectInParent: Mind.Size & Mind.Coordinate =
             cache.processCache.descendantCenterLayout.localityRectInParent
           // 自身所领导的区域容器矩形信息
-          const localityReact: BadeMind.Size & BadeMind.Coordinate =
+          const localityReact: Mind.Size & Mind.Coordinate =
             cache.processCache.descendantCenterLayout.localityRect
 
           // 节点所领导区域左上角坐标
           // 即，领导区域的原点
-          const nodeOrigin: BadeMind.Coordinate = {
+          const nodeOrigin: Mind.Coordinate = {
             x: origin.x + localityRectInParent.x - localityRectInParent.width / 2,
             y: origin.y + localityRectInParent.y - localityRectInParent.height / 2
           }

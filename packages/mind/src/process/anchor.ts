@@ -1,15 +1,15 @@
 import { Zoom } from '../graphic/zoom'
-import { BadeMind } from '../index'
+import { Mind } from '../index'
 import { Process } from './index'
 
 export class Anchor implements Process.Lifecycle {
-  private preAnchorRect?: BadeMind.Size & BadeMind.Coordinate
+  private preAnchorRect?: Mind.Size & Mind.Coordinate
   private anchor?: string
-  private cacheMap: BadeMind.CacheMap
-  private transform: BadeMind.Transform
+  private cacheMap: Mind.CacheMap
+  private transform: Mind.Transform
   private zoom: Zoom
   private viewport: HTMLElement
-  private root: BadeMind.Root
+  private root: Mind.Root
 
   start = (context: Process.StartContext) => {
     const { preCacheMap, cacheMap, anchor, transform, zoom, viewport, root } = context
@@ -30,7 +30,7 @@ export class Anchor implements Process.Lifecycle {
 
     // 在经历数据改变，布局重计算之后，锚点依然存在，则，锁定锚点，保持缩放比不变
     if (anchorCache && this.preAnchorRect) {
-      const diff: BadeMind.Coordinate = {
+      const diff: Mind.Coordinate = {
         x: (anchorCache.rect.x - this.preAnchorRect.x) * this.transform.scale,
         y: (anchorCache.rect.y - this.preAnchorRect.y) * this.transform.scale
       }

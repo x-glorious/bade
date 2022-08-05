@@ -1,15 +1,15 @@
-import { BadeMind } from '../../index'
+import { Mind } from '../../index'
 import { bezier } from './bezier'
 import { line } from './line'
 
-export const getPathRender = (options: Required<BadeMind.Options>) => {
+export const getPathRender = (options: Required<Mind.Options>) => {
   const { pathRender, lineStyle } = options
   if (pathRender) {
     return pathRender
   } else {
     const styleMap = {
-      [BadeMind.LinkStyle.line]: line,
-      [BadeMind.LinkStyle.bezier]: bezier
+      [Mind.LinkStyle.line]: line,
+      [Mind.LinkStyle.bezier]: bezier
     }
     return styleMap[lineStyle]
   }

@@ -1,16 +1,16 @@
 import { WithDefault } from '../default'
 import { Zoom } from '../graphic/zoom'
 import { Helper } from '../helper'
-import { BadeMind } from '../index'
+import { Mind } from '../index'
 import { Process } from '../process'
 
 export const layout = (context: {
-  cacheMap: BadeMind.CacheMap
-  options: Required<BadeMind.Options>
-  root: BadeMind.Root
+  cacheMap: Mind.CacheMap
+  options: Required<Mind.Options>
+  root: Mind.Root
   container: HTMLElement
   viewport: HTMLElement
-  transform: BadeMind.Transform
+  transform: Mind.Transform
   anchor?: string
   zoom: Zoom
 }) => {

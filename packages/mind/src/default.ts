@@ -1,16 +1,16 @@
 import { merge } from 'lodash'
 
-import { BadeMind } from './index'
+import { Mind } from './index'
 
 // 函数式动态生成默认值，防止 value 为对象时的重复引用
 
-const generateOptions = (): BadeMind.Options => ({
+const generateOptions = (): Mind.Options => ({
   callback: {
     onNodeVisibleChange: (_n) => {},
     onTransformChange: (_t) => {}
   },
-  childAlignMode: BadeMind.ChildAlignMode.structured,
-  direction: BadeMind.Direction.x,
+  childAlignMode: Mind.ChildAlignMode.structured,
+  direction: Mind.Direction.x,
   event: {
     onViewportContextMenu: (_e) => {},
     onZoomEventTrigger: {
@@ -19,20 +19,21 @@ const generateOptions = (): BadeMind.Options => ({
       zoom: (_e) => {}
     }
   },
-  lineStyle: BadeMind.LinkStyle.bezier,
+  lineStyle: Mind.LinkStyle.bezier,
   nodeSeparate: 50,
   rankSeparate: 50,
   viewportPreloadPadding: 0,
-  zoomExtent: {}
+  zoomExtent: {},
+  disableLinesTailor: false
 })
 
-const generateCache = (): BadeMind.NodeCache => ({
+const generateCache = (): Mind.NodeCache => ({
   line: {
     source: { x: 0, y: 0 },
     target: { x: 0, y: 0 }
   },
-  node: {} as BadeMind.Node,
-  orientation: BadeMind.Orientation.root,
+  node: {} as Mind.Node,
+  orientation: Mind.Orientation.root,
   processCache: {},
   rect: { height: 0, width: 0, x: 0, y: 0 },
   visible: {
@@ -41,7 +42,7 @@ const generateCache = (): BadeMind.NodeCache => ({
   }
 })
 
-const generateTransform = (): BadeMind.Transform => ({
+const generateTransform = (): Mind.Transform => ({
   scale: 1,
   x: 0,
   y: 0
@@ -50,13 +51,13 @@ const generateTransform = (): BadeMind.Transform => ({
 const withDefaultBuilder =
   <T>(defaultData: () => T) =>
   /* eslint-disable */
-    (data?: T): Required<T> => {
-      if(data){
-        return merge(defaultData(),data ) as any
-      }else{
-        return defaultData() as any
-      }
+  (data?: T): Required<T> => {
+    if (data) {
+      return merge(defaultData(), data) as any
+    } else {
+      return defaultData() as any
     }
+  }
 /* eslint-enable */
 
 export const WithDefault = {

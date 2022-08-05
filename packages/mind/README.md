@@ -1,26 +1,18 @@
 # bade-mind
 
-**Bade** 思维导图核心，提供绘制所需必要工具功能，不依赖于特定框架
+- 脑图内核，并不依赖于任何UI框架，只实现逻辑以及链接渲染
+- 内核不负责节点渲染
+- node **`sizeof`** 函数为用户需要**重点注意以及实现的点**
+- 内核直接使用比较复杂，可使用UI框架封装版本
+  - React 框架：`bade-mind-react`
 
 ## Installation
-
-### NPM
 
 ```shell
 npm install bade-mind
 ```
 
-## Usage
-
-- 库本身并**不负责node内容的渲染**，其只会渲染链接线以及管理手势系统，计算布局等
-
-- 在使用的时候，需要用户根据使用框架、环境**自行实现节点的`sizeof`函数**，此函数用作获取某个节点的dom尺寸，并会在**每一次渲染的时候调用**，用于计算布局
-
-- 需要注意的是，**普通节点**的子代通过`children`设置，但**根节点的`children`会被忽略**，需要通过`root.positive`或`root.negative`来设置
-
-### Simple demo
-
-**Html**
+## Simple demo
 
 ```html
 <!DOCTYPE html>
@@ -52,7 +44,7 @@ npm install bade-mind
         }
 
         /* 定义链接线样式 */
-        .bade-mind__lines{
+        .mind__lines{
             stroke: #2775b6;
             stroke-width: 3px;
         }
@@ -83,37 +75,15 @@ npm install bade-mind
         <div id="node-container"></div>
     </div>
 </div>
+<script src="./index.js" type="module"></script>
 </body>
 </html>
 ```
 
-**Simple data**
+```js
+import { Mind } from 'bade-mind'
 
-```tsx
-const rootHtml = `<div class="node-content root-node" style="width: 100px;height: 100px;box-sizing: content-box;">Root</div>`
-
-// 简单测量html字符串内容尺度
-export const measureSize = (html: string, viewport: HTMLElement) => {
-  const size: BadeMind.Size = {
-    height: 0,
-    width: 0
-  }
-  const container = document.createElement('div')
-  // 将内容脱离文档流并且完全隐藏起来
-  container.style.cssText =
-    'position:fixed;top:0;left:0;pointer-events:none;visibility:hidden;opacity:0;overflow:hidden;'
-  container.innerHTML = html
-  viewport.appendChild(container)
-  size.width = container.clientWidth
-  size.height = container.clientHeight
-
-  // 测量完成移除
-  viewport.removeChild(container)
-
-  return size
-}
-
-const generateRoot = (viewport: HTMLElement): BadeMind.Root => ({
+const generateRoot = () => ({
   negative: [
     {
       children: [
@@ -141,7 +111,10 @@ const generateRoot = (viewport: HTMLElement): BadeMind.Root => ({
   ],
   node: {
     id: 'root',
-    sizeof: () => measureSize(rootHtml, viewport)
+    sizeof: () => ({
+      width: 100,
+      height: 100
+    })
   },
   positive: [
     {
@@ -169,55 +142,87 @@ const generateRoot = (viewport: HTMLElement): BadeMind.Root => ({
     }
   ]
 })
-```
 
-**Logic**
-
-```tsx
 window.onload = () => {
-  const viewport = document.getElementById('root')!
+  const viewport = document.getElementById('root')
   const container = document.getElementById('container')
   const nodeContainer = document.getElementById('node-container')
-  let graphic: BadeMind.Graphic | undefined = undefined
+  let graphic = undefined
   const root = generateRoot(viewport)
 
-  graphic = new BadeMind.Graphic(viewport, container, {
+  graphic = new Mind.Graphic(viewport, container, {
     callback: {
       onNodeVisibleChange: (nodes) => {
         nodeContainer.innerHTML = nodes
           .map((node) => {
             const anchor = graphic.getNodeAnchorCoordinate(node.id)
             let content = ''
-            if (node.id === root.node.id) {
-              content = rootHtml
-            } else {
-              content = `<div class="node-content" style="width: ${node.sizeof().width}px;height: ${
-                node.sizeof().height
-              }px;"></div>`
-            }
+            const isRoot = node.id === root.node.id
+
+            content = `
+              <div class="${isRoot ? 'root-node' : ''} node-content" 
+              style="
+                width:  ${node.sizeof().width}px;
+                height: ${node.sizeof().height}px;
+              ">
+                  ${isRoot ? 'root' : ''}
+              </div>`
 
             return `<div class="node" style="transform: translateX(${anchor.x}px) translateY(${anchor.y}px)">${content}</div>`
           })
           .join('')
       }
     },
-    childAlignMode: BadeMind.ChildAlignMode.structured,
-    lineStyle: BadeMind.LinkStyle.line,
-    pathRender: (context) => {
-      const { source, target } = context
-      return `M${source.x},${source.y}L${target.x},${target.y}`
-    }
+    childAlignMode: Mind.ChildAlignMode.structured
   })
 
   graphic.setData(root)
 }
 ```
 
-**Result**
+## Usage
 
-<img src="./docs/simple-usage-result.png" title="" alt="simple-usage-result.png" data-align="center">
+### 1. sizeof
 
-## API
+首先需要自定义实现每一个节点中的`sizeof`函数，内核会在计算各节点图层位置时调用此函数获取节点尺寸
+
+- 如果`sizeof`函数需要耗费大量计算资源，则需要外部自行使用缓存等方案，**内核将不会缓存`sizeof`结果**
+
+### 2. container & viewport
+
+准备两个dom作为容器
+
+- `viewport`为屏幕可视区域，内核将会**监听其尺寸执行区域渲染操作**
+
+- `container`为渲染容器，
+  
+  - 需要将节点渲染于其中
+  
+  - 内核将会自动注入`svg`标签（链接线）作为其直系子代
+
+### 3. onNodeVisibleChange & judgeNodeVisible
+
+- 可通过`onNodeVisibleChange`事件直接获取可视的节点用作后续渲染
+
+- 也可以`onNodeVisibleChange`事件驱动重新渲染，通过`judgeNodeVisible`判断每一个节点是否可视，然后渲染
+
+### 4. render
+
+内核交由节点渲染部分给用户自行渲染
+
+- `getNodeAnchorCoordinate`用作获取节点渲染锚点坐标（左上角）
+
+- **建议**所有节点设置`position:absolute;top:0;left:0;`，然后使用`transform`做坐标偏移（避免出现渲染错误的情况）
+
+### 5. setData、setOptions
+
+使用`setData`函数设置/更新数据，启动重渲染
+
+- **内核将不会做任何数据比较**，只要调用了函数，则视作数据变化，启动渲染
+
+使用`setOptions`函数设置/更新配置信息，如果需要重渲染，则需要手动调用`setData`
+
+## Class
 
 ### Graphic
 
@@ -227,9 +232,9 @@ window.onload = () => {
 
 ```tsx
 constructor(
-    viewport: HTMLElement,
-    container: HTMLElement,
-    options?: BadeMind.Options
+    viewport: HTMLElement,
+    container: HTMLElement,
+    options?: Mind.Options
 )
 ```
 
@@ -237,11 +242,35 @@ constructor(
 
 - **param** **`container`** 容器
   
-  - svg链接线将会自动注入到container中
+  - `svg`链接线将会作为一个`svg tag`自动注入到`container`中
   
-  - `transform` 相关信息将会自动注入到`container`中
+  - 位移、脑图绘制尺寸将会自动注入到`container`中
+    
+    - **请勿**在外部手动**修改**`container` `width`、`height`、`transform`、`transformOrigin` 属性
 
 - **param** **`options`** 配置参数
+
+#### getNodeAnchorCoordinate
+
+获取节点定位锚点（左上角）位置，可在节点绘制的时候确定其位置
+
+- 推荐所有节点使用`position:absolute;left:0;top:0;`并且配合`transform`来定位，避免出现绘制异常
+
+```tsx
+function getNodeAnchorCoordinate(id: string): Mind.Coordinate | undefined
+```
+
+- **@param** `id` 节点对应id
+
+#### unbind
+
+注销事件绑定
+
+- 请在销毁组件之前调用
+
+```tsx
+function unbind(): void
+```
 
 #### judgeNodeVisible
 
@@ -251,30 +280,47 @@ constructor(
 function judgeNodeVisible(id: string): boolean
 ```
 
-- **param** **`id`** 节点`id`
+- **@param** `id` 节点对应id
 
-- **return** 当前节点是否可见（寻找不到对应节点时也返回`false`）
+#### setOptions
 
-#### getNodeAnchorCoordinate
+设定 `options` 
 
-获取节点定位锚点（左上角）位置，可在节点绘制的时候确定其位置
-
-- 推荐使用`position:absolute;left:0;top:0;`配合`transform`来定位，避免出现绘制异常
+* 函数不会自动执行重渲染，如果改变的`options`需要重新计算布局等操作，推荐使用 `setData` 驱动数据重渲染
 
 ```tsx
-function getNodeAnchorCoordinate(id: string): BadeMind.Coordinate | undefined
+function setOptions(options?: Mind.Options, isMerge: boolean = false): voi
 ```
 
-- **param** **`id`** 节点`id`
+* **@param** `options` 设定选项  
+* **@param** `isMerge` 是否与之前的`options`做合并操作
 
-- **return** 锚点坐标（寻找不到对应节点时返回`undefined`）
+#### dragControllerBuilder
+
+生成拖动控制器
+
+- 根节点不可拖拽
+
+- 当前暂时只有`Mind.ChildAlignMode.structured`布局算法支持拖拽功能
+
+```tsx
+function dragControllerBuilder(drag: Mind.Node | string): Drag | undefined
+```
+
+- **@param** `drag` 拖动节点`node`对象或`id`
+
+- **@return**
+  
+  - 当**root**（没有调用`setData`）不存在时，或者`drag`为根节点时，返回`undefined`
+  
+  - 正常情况返回 `Drag` 类对象
 
 #### getLayoutSize
 
 获取渲染层尺寸
 
 ```tsx
-function getLayoutSize(): BadeMind.Size | undefined
+function getLayoutSize(): Mind.Size | undefined
 ```
 
 #### getNode
@@ -282,67 +328,30 @@ function getLayoutSize(): BadeMind.Size | undefined
 获取`id`对应节点
 
 ```tsx
-function getNode(id: string): BadeMind.Node | undefined
+function getNode(id: string): Mind.Node | undefined
 ```
+
+- **@param** `id` 节点id
 
 #### getParent
 
-获取`id`对应节点父级
+获取`id`对应父节点
 
 ```tsx
-function getParent(id: string): BadeMind.Node | undefined
+function getParent(id: string): Mind.Node | undefined
 ```
+
+**@param** `id` 节点id
 
 #### getNodeOrientation
 
 获取`id`对应节点渲染方位
 
 ```tsx
-function getNodeOrientation(id: string): BadeMind.Orientation | undefined
+function getNodeOrientation(id: string): Mind.Orientation | undefined
 ```
 
-#### dragControllerBuilder
-
-生成拖动控制器
-
-- 根节点不可拖拽
-- 当前**内置布局方式暂时只有**`BadeMind.ChildAlignMode.structured`布局算法支持拖拽功能
-
-```tsx
-function dragControllerBuilder(drag: BadeMind.Node | string): Drag | undefined
-```
-
-- **param** **`drag`** 拖动节点node对象或id
-
-- **return** 
-  
-  - 当root（没有调用`setData`）不存在时，或者`drag`为根节点时，返回`undefined`
-  
-  - 正常情况返回 `Drag` 类对象
-
-#### unbind
-
-注销事件绑定
-
-```tsx
-function unbind(): void
-```
-
-#### setOptions
-
-设定 `options`
-
-- 不会自动执行重渲染，如果改变的`options`需要**重新计算布局**等操作，推荐使用 `setData` 驱动数据重渲染
-
-```tsx
-function setOptions(
-    options?: BadeMind.Options,
-    isMerge: boolean = false): void
-```
-
-- **param** **`options`** 设定选项
-
-- **param** **`isMerge`** 是否与之前的`options`做合并操作
+**@param** `id` 节点id
 
 #### setTransform
 
@@ -352,54 +361,49 @@ function setOptions(
 
 - 请注意：`setTransform` 之后 `onTransformChange` 事件依旧会触发
 
-- 此方法不受 `zoomExtent.translate` 限制
+- 此方法不受 `zoomExtent.translate`、`zoomExtent.scale` 限制，使用需谨慎
 
 ```tsx
-function setTransform(
-    transform: Partial<BadeMind.Transform>,
-    duration?: number): void
+function setTransform(transform: Partial<Mind.Transform>,duration?: number): void
 ```
 
-- **param** **`transform`** 位移缩放数据
+- **@param** `transform` 位移缩放数据
 
-- **param** **`duration`** 周期，如果配置，则执行变换会附带动画效果
-
-#### scale
-
-缩放
-
-- 此方法受到 `zoomExtent.translate` 限制
-
-- 此方法受到 `zoomExtent.scale` 限制
-
-```tsx
-function scale(
-    scale: number,
-    point?: BadeMind.Coordinate,
-    duration?: number): void
-```
-
-- **param** **`transform`** 缩放值
-
-- **param** **`point`** 缩放相对点（如不配置或为`undefined`，则默认相对于`viewport`中心缩放）
-
-- **param** **`duration`** 周期，如果配置，则执行变换会附带动画效果
+- **@param** `duration` 周期，如果配置，则执行变换会附带动画效果
 
 #### translate
 
-位移
+设定位移
 
 - 此方法受到 `zoomExtent.translate` 限制
 
 ```tsx
-function translate(
-    translate: BadeMind.Coordinate,
+function translate(translate: Mind.Coordinate,duration?: number): void
+```
+
+- **@param** `translate` 位移差(屏幕尺度)
+
+- **@param** `duration`周期，如果配置，则执行变换会附带动画效果
+
+#### scale
+
+设定缩放
+
+- 此方法受到 `zoomExtent.translate` 限制  
+* 此方法受到 `zoomExtent.scale` 限制
+
+```tsx
+function scale(
+    scale: number,
+    point?: Mind.Coordinate,
     duration?: number): void
 ```
 
-- **param** **`translate`** 位移差(屏幕尺度)
+- **@param** `scale` 缩放比
 
-- **param** **`duration`** 周期，如果配置，则执行变换会附带动画效果
+- **@param** `point` 缩放相对点（如不配置或为`undefined`，则默认相对于`viewport`中心缩放）
+
+- **@param** `duration` 动画周期，如配置，则位移会附带动画效果
 
 #### nodeTranslateTo
 
@@ -409,41 +413,33 @@ function translate(
 
 ```tsx
 function nodeTranslateTo(
-    config: {
-        id: string,
-        diff: BadeMind.Coordinate,
-        relative: BadeMind.Relative
-    },
+    config: {id: string, diff: Mind.Coordinate, relative: Mind.Relative},
     duration?: number): void
 ```
 
-- **param** **`config`** 配置参数
-
-- **param** **`config.id`** 节点id
-
-- **param** **`config.diff`** 位移差
-
-- **param** **`config.relative`** 相对位置
-
-- **param** **`duration`** 动画周期，如配置，则位移会附带动画效果
+* **@param** `config` 配置参数  
+* **@param** `config.id` 节点id  
+* **@param** `config.diff` 位移差  
+* **@param** `config.relative` 相对位置  
+* **@param** `duration` 动画周期，如配置，则位移会附带动画效果
 
 #### getTransform
 
 获取位移缩放信息
 
 ```tsx
-function getTransform(): BadeMind.Transform
+function getTransform(): Mind.Transform
 ```
 
 #### setAnchor
 
-设置锚点
+设置锚点节点
 
 ```tsx
 function setAnchor(id?: string): void
 ```
 
-- **param** **`id`** 锚定节点id
+- **@param** `id` 锚定节点id(如不设定，则清空锚点，根节点居中，缩放比归一)
 
 #### setData
 
@@ -453,37 +449,33 @@ function setAnchor(id?: string): void
 - 如果 `anchor` 没有设定，或者找不到对应节点，则，根节点居中，缩放比重置为1
 
 ```tsx
-function setData(root: BadeMind.Root): void
+function setData(root: Mind.Root): void
 ```
 
-- **param** **`root`** 根数据
+- **@param** `root` 根数据
 
-## Drag
+### Drag
 
-拖动控制器
+拖动逻辑相关控制类，实现拖拽计算逻辑，不与特定手势关联
 
-- 推荐使用`Graphic.dragControllerBuilder`生成，自动注入所需数据
+- **推荐使用**`Graphic.dragControllerBuilder`生成，自动注入所需数据，不推荐手动`new`初始化对象
+- 需要当前使用的布局类型支持拖拽
 
-### constructor
+#### constructor
 
 ```tsx
 constructor(context: {
-    options: Required<BadeMind.Options>, 
-    cacheMap: BadeMind.CacheMap, 
-    root: BadeMind.Root, 
-    maxDistance: number,
-    dragNode: BadeMind.Node
-    container: HTMLElement
+    options: Required<Mind.Options>, 
+    cacheMap: Mind.CacheMap, 
+    root: Mind.Root, 
+    dragNode: Mind.Node,
+container: HTMLElement
 })
 ```
 
-### calcDropIndex
+#### calcDropIndex
 
-获取拖动节点插入到关联节点子代的下标
-
-- 如果**父级改变**，则为期望插入位置下标，直接插入子代中即可
-
-- 如果**父级未变**，则需要先使用下标插入到对应位置之后，删除原先的节点
+**获取**拖动节点插入到关联节点子代的**下标**
 
 ```tsx
 function calcDropIndex(
@@ -502,12 +494,16 @@ function calcDropIndex(
 - **param** **`attachedNode`** 被关联的节点
 
 - **return** 期望插入位置
+  
+  - 如果**父级改变**，则为期望插入位置下标，直接插入子代中即可
+  
+  - 如果**父级未变**，则需要先使用下标插入到对应位置之后，删除原先的节点
 
-### drag
+#### drag
 
-拖动操作
+通知控制器正在执行拖动操作，计算链接信息
 
-- 根节点不可拖拽
+- **根节点不可拖拽**
 
 ```tsx
 function drag(position: BadeMind.Coordinate,canBeAttachedNodes: BadeMind.Node[]): {
@@ -528,7 +524,7 @@ function drag(position: BadeMind.Coordinate,canBeAttachedNodes: BadeMind.Node[])
   
   - `attach`为拖拽节点依附的目标节点
 
-### end
+#### end
 
 通知控制器拖动操作结束
 
@@ -537,43 +533,6 @@ function end(): void
 ```
 
 ## Types
-
-### Size
-
-```tsx
-interface Size {
-    width: number
-    height: number
-}
-```
-
-### Coordinate
-
-```tsx
-interface Coordinate {
-    x: number
-    y: number
-} 
-```
-
-### Root
-
-```tsx
-interface Root {
-    /**
-     * 根节点数据
-     */
-    node: Omit<Node, 'children'>
-    /**
-     * 正向区域节点
-     */
-    positive?: Node[]
-    /**
-     * 负向区域节点
-     */
-    negative?: Node[]
-}
-```
 
 ### Options
 
@@ -635,98 +594,73 @@ export interface Options {
      * - 优先级高于 childAlignMode 选择的布局方式
      */
     layoutProcess?: { new (): Process.Lifecycle }
-  }
+}
+```
+
+### Root
+
+根节点
+
+- 脑图可以向左右或者上下扩展，故而需要划分`positive`、`negative`
+
+```tsx
+interface Root {
+    /**
+     * 根节点数据
+     */
+    node: Omit<Node, 'children'>
+    /**
+     * 正向区域节点
+     */
+    positive?: Node[]
+    /**
+     * 负向区域节点
+     */
+    negative?: Node[]
+}
 ```
 
 ### Node
 
-节点信息
+节点信息  
 
 ```tsx
-interface Node {
-    /**
-     * 获取当前节点尺寸
-     */
-    sizeof: () => Size
-    /**
-     * 全局唯一 id
-     */
-    id: string
-    /**
-     * 子代
-     */
-    children?: Node[]
-    /**
-     * 是否折叠子代
-     * - 根节点为数组，[negative,positive]
-     * - 普通节点直接代表是否折叠子代
-     * @default false | [false,false]
-     */
-    fold?: boolean | boolean[]
-    /**
-     * 附带数据
-     * - 请将节点附带的数据全部存储到此处
-     */
-    attachData?: any
+interface Node {  
+    /** 
+    * 获取当前节点尺寸  
+    */ 
+    sizeof: () => Size 
+    /** 
+    * 全局唯一 id 
+    */ 
+    id: string  
+     /**
+     * 子代  
+     */ 
+    children?: Node[]  
+    /** 
+    * 是否折叠子代  
+    * - 根节点为数组，[negative,positive]  
+    * - 普通节点直接代表是否折叠子代  
+    * @default false | [false,false] 
+    */ 
+    fold?: boolean | boolean[]  
+    /** 
+    * 附带数据  
+    * - 请将节点附带的数据全部存储到此处  
+    */ 
+    attachData?: any  
 }
 ```
 
-### Direction
+### Basic
 
-渲染方向
+#### Callback
 
-- `positive` 在 x 模式下渲染在右侧，y 模式下渲染在上侧
-
-- `negative` 在 x 模式下渲染在左侧，y 模式下渲染在下侧
+回调集合
 
 ```tsx
-const Direction = {x: 'x', y: 'y'} as const
-
-type Direction = 'x' | 'y'
-```
-
-- `x` 横向渲染模式
-
-- `y` 纵向渲染模式
-
-### ChildAlignMode
-
-```tsx
-const ChildAlignMode = {
-    descendantCenter: 'descendant-center',
-    heirCenter: 'heir-center',
-    structured: 'structured'
-} as const
-
-type ChildAlignMode = "heir-center" | "structured" | "descendant-center"
-```
-
-- `descendant-center` 子代对齐模式（**同一父节点的子代视作整体**对齐）
-
-![descendant-center.png](./docs/descendant-center.png)
-
-- `heir-center` 直系子代对齐模式（**同一父节点直系子代**对齐）
-
-![heir-center.png](./docs/heir-center.png)
-
-- `structured` 结构化规整模式（同一父节点直系子代**边缘对齐**）
-
-![structured.png](./docs/structured.png) 
-
-### Transform
-
-```tsx
-interface Transform {
-    x: number
-    y: number
-    scale: number
-}
-```
-
-### Callback
-
-```tsx
-export interface Callback {
+interface Callback {
     /**
      * 转换发生改变，通知外部
      * @param transform
@@ -738,22 +672,24 @@ export interface Callback {
      * @param nodes 可见节点数组(节点都是对`setData`中节点数据的引用，请注意根节点设置`children`无效)
      */
     onNodeVisibleChange?: (nodes: BadeMind.Node[]) => void
-  }
+}
 ```
 
-#### onTransformChange
+##### onTransformChange
 
-通知外部`transform`相关信息发生了改变，常用于辅助额外控制行为，举个🌰：滚动条、缩放器
+通知外部`transform`相关信息发生了改变，常用于**辅助额外控制行为**，举个🌰：实现滚动条、缩放器等辅助控制
 
-#### onNodeVisibleChange
+##### onNodeVisibleChange
 
-可见节点发生改变
+可见节点发生改变  
 
-- `nodes`中节点皆为`setData root`中的**数据引用**
+- `nodes`中节点皆为`setData root`中的**数据引用**  
 
 - 请注意对根节点的特殊处理（根节点设置`children`无效，应该设置`root`的`positive`或`negative`）
 
-### Event
+#### Event
+
+内核事件
 
 ```tsx
 interface Event {
@@ -770,19 +706,21 @@ interface Event {
 }
 ```
 
-#### onViewportContextMenu
+##### onViewportContextMenu
 
-`viewport`右键上下文事件触发，可通过此事件自定义右键菜单
+`viewport`右键上下文事件触发，可通过此事件自定义右键菜单  
 
-- 由于右键拖动，移动脑图面板，故而库默认禁用了`viewport`的右键菜单事件
+- 由于右键拖动，移动脑图面板，故而库默认禁用了`viewport`的右键菜单事件  
 
-#### onZoomEventTrigger
+##### onZoomEventTrigger
 
-缩放位移相关按钮手势事件触发
+缩放位移相关按钮手势事件触发  
 
 - 右键拖动、Ctrl+滚轮缩放，在这些行为下库会拦截其对应事件，导致外部无法绑定事件
 
-### ZoomEvent
+#### ZoomEvent
+
+缩放事件
 
 ```tsx
 /**
@@ -808,82 +746,7 @@ interface ZoomEvent {
 }
 ```
 
-### LinkStyle
-
-库内部预设链接风格
-
-```tsx
-const LinkStyle = {bezier: 'bezier',line: 'line'} as const
-
-type LinkStyle = "line" | "bezier"
-```
-
-- `bezier` 贝塞尔曲线链接
-
-![bezier.png](./docs/bezier.png)
-
-- `line` 线性链接
-  
-  - 线性只有在 `ChildAlignMode.structured` 风格下表现最佳
-
-![line.png](./docs/line.png)
-
-### PathRender
-
-自定义路径渲染器，其返回值将作为链接线`path`的`d`属性值
-
-- [d - SVG | MDN](https://developer.mozilla.org/zh-CN/docs/Web/SVG/Attribute/d)
-
-```tsx
-type PathRender = (context: PathRenderContext) => string
-```
-
-🌰：把所有节点用直线链接起来
-
-```tsx
-const linePathRender: PathRender = (context) => {
-    const { source, target } = context
-    return `M${source.x},${source.y}L${target.x},${target.y}`
-}
-```
-
-![custom-line-render.png](./docs/custom-line-render.png)
-
-### Line/PathData/PathRenderContext
-
-```tsx
-interface Line {
-    /**
-     * 链接线起点（节点父级）
-     */
-    source: Coordinate
-    /**
-     * 连接线终点（节点自身）
-     */
-    target: Coordinate
-}
-
-interface PathData extends Line {
-    /**
-     * 节点自身数据
-     */
-    node: Node
-}
-
-
-interface PathRenderContext extends PathData {
-    /**
-     * 设定
-     */
-    options: Required<Options>
-    /**
-     * 缓存地图
-     */
-    cacheMap: CacheMap
-} 
-```
-
-### ZoomExtent
+#### ZoomExtent
 
 缩放、位移边界设定
 
@@ -904,15 +767,214 @@ interface ZoomExtent {
 }
 ```
 
-## Advance
+#### LinkStyle
 
-### CacheMap
+内核预设链接风格
+
+```tsx
+type LinkStyle = "line" | "bezier"
+```
+
+- `bezier` 贝塞尔曲线链接  
+
+![bezier.png](https://raw.githubusercontent.com/x-glorious/bade/main/docs/bezier.png)  
+
+- `line` 线性链接  
+  - 线性只有在 `ChildAlignMode.structured` 风格下表现最佳  
+
+![line.png](https://raw.githubusercontent.com/x-glorious/bade/main/docs/line.png)
+
+#### Size
+
+尺寸
+
+```tsx
+interface Size {  
+ width: number  
+ height: number  
+}
+```
+
+#### Coordinate
+
+坐标
+
+```tsx
+interface Coordinate {  
+ x: number
+ y: number
+}
+```
+
+#### Direction
+
+渲染方向  
+
+- `positive` 在 x 模式下渲染在右侧，y 模式下渲染在上侧  
+
+- `negative` 在 x 模式下渲染在左侧，y 模式下渲染在下侧
+
+```tsx
+type Direction = 'x' | 'y'
+```
+
+- `x` 横向渲染模式  
+
+- `y` 纵向渲染模式
+
+#### ChildAlignMode
+
+内核内置布局方式
+
+```tsx
+type ChildAlignMode = "heir-center" | "structured" | "descendant-center"
+```
+
+- `descendant-center` 子代对齐模式（**同一父节点的子代视作整体**对齐）  
+
+![descendant-center.png](https://raw.githubusercontent.com/x-glorious/bade/main/docs/descendant-center.png)  
+
+- `heir-center` 直系子代对齐模式（**同一父节点直系子代**对齐）  
+
+![heir-center.png](https://raw.githubusercontent.com/x-glorious/bade/main/docs/heir-center.png)  
+
+- `structured` 结构化规整模式（同一父节点直系子代**边缘对齐**）  
+
+![structured.png](https://raw.githubusercontent.com/x-glorious/bade/main/docs/structured.png)
+
+#### Transform
+
+渲染区域位移缩放转化信息
+
+```tsx
+interface Transform {
+    x: number
+    y: number
+    scale: number
+}
+```
+
+#### Relative
+
+相对位置
+
+```tsx
+type RelativeX = "middle" | "left" | "right"
+
+
+type RelativeY = "middle" | "top" | "bottom"
+
+
+interface Relative {
+    x: RelativeX
+    y: RelativeY
+}
+```
+
+### Advanced
+
+#### PathRender
+
+自定义路径渲染器，其返回值将作为链接线`path`的`d`属性值
+
+- [d - SVG | MDN](https://developer.mozilla.org/zh-CN/docs/Web/SVG/Attribute/d)
+
+```tsx
+type PathRender = (context: PathRenderContext) => string
+```
+
+🌰：把所有节点用直线链接起来  
+
+```tsx
+const linePathRender: PathRender = (context) => {  
+ const { source, target } = context  
+ return `M${source.x},${source.y}L${target.x},${target.y}`  
+}  
+```
+
+![custom-line-render.png](https://raw.githubusercontent.com/x-glorious/bade/main/docs/custom-line-render.png)
+
+##### PathRenderContext
+
+```tsx
+interface PathData extends Line {
+    /**
+     * 节点自身数据
+     */
+    node: Node
+}
+
+interface PathRenderContext extends PathData {
+    /**
+     * 设定
+     */
+    options: Required<Options>
+    /**
+     * 缓存地图
+     */
+    cacheMap: CacheMap
+} 
+```
+
+#### Line
+
+连线信息
+
+```tsx
+interface Line {
+    /**
+     * 链接线起点（节点父级）
+     */
+    source: Coordinate
+    /**
+     * 连接线终点（节点自身）
+     */
+    target: Coordinate
+}
+```
+
+#### Orientation
+
+节点与根节点之间的位置关系
+
+```tsx
+type Orientation = "negative" | "root" | "positive"
+```
+
+- `negative` 节点位于根负向区域  
+
+- `positive` 节点位于根正向区域  
+
+- `root` 节点为根节点
+
+#### Visible
+
+节点可见信息
+
+```tsx
+interface Visible {
+    /**
+     * 节点本身是否可见
+     */
+    node: boolean
+    /**
+     * 与父级之间的连线
+     */
+    lineAttachParent: boolean
+}
+```
+
+#### CacheMap
+
+内核缓存信息
 
 ```tsx
 type CacheMap = Map<string, NodeCache>
 ```
 
-### NodeCache
+#### NodeCache
+
+节点缓存信息
 
 ```tsx
 interface NodeCache {
@@ -952,40 +1014,7 @@ interface NodeCache {
 }
 ```
 
-### Orientation
-
-```tsx
-const Orientation = {
-    negative: 'negative',
-    positive: 'positive',
-    root: 'root'
-} as const
-
-type Orientation = "negative" | "root" | "positive"
-```
-
-- `negative` 节点位于根负向区域
-
-- `positive` 节点位于根正向区域
-
-- `root` 节点为根节点
-
-### Visible
-
-```tsx
-interface Visible {
-    /**
-     * 节点本身是否可见
-     */
-    node: boolean
-    /**
-     * 与父级之间的连线
-     */
-    lineAttachParent: boolean
-}
-```
-
-### DraggableLayout
+#### DraggableLayout
 
 可拖拽布局类
 
@@ -1005,13 +1034,13 @@ class DraggableLayout {
    * @return 如果没有合法的节点关联，则返回`undefined`
    */
   public static calcDragAttach = (context: {
-    cacheMap: BadeMind.CacheMap
-    draggingRect: BadeMind.Coordinate & BadeMind.Size
-    canBeAttachedNodes: BadeMind.Node[]
-    ignoreNodes: BadeMind.Node[]
-    root: BadeMind.Root
-    options: Required<BadeMind.Options>
-  }): BadeMind.DragAttach | undefined => {
+    cacheMap: CacheMap
+    draggingRect: Coordinate & Size
+    canBeAttachedNodes: Node[]
+    ignoreNodes: Node[]
+    root: Root
+    options: Required<Options>
+  }): DragAttach | undefined => {
     ...
   }
 
@@ -1024,13 +1053,13 @@ class DraggableLayout {
    * @oaram context.Node 拖拽节点
    */
   public static calcDropIndex = (context: {
-    cacheMap: BadeMind.CacheMap
-    attachedNodeChildren: BadeMind.Node[] | undefined
-    dropPosition: BadeMind.Coordinate
-    attachedNode: BadeMind.Node
-    dragNode: BadeMind.Node
-    root: BadeMind.Root
-    options: BadeMind.Options
+    cacheMap: CacheMap
+    attachedNodeChildren: Node[] | undefined
+    dropPosition: Coordinate
+    attachedNode: Node
+    dragNode: Node
+    root: Root
+    options: Options
   }): number => {
     ...
   }
@@ -1045,13 +1074,11 @@ class DraggableLayout {
 }
 ```
 
-### Process
+#### Process
 
 处理器为拓展自定义功能
 
-#### Lifecycle
-
-处理器生命周期
+##### Lifecycle
 
 ```tsx
 interface Lifecycle<S = void, E = void, AE = void, END = void> {
@@ -1076,33 +1103,33 @@ interface Lifecycle<S = void, E = void, AE = void, END = void> {
 }
 ```
 
-#### StartContext
+##### StartContext
 
-开始处理节点之前上下文
+开始处理节点之前的上下文
 
 ```tsx
 interface StartContext {
     /**
      * 配置项
      */
-    options: Required<BadeMind.Options>
+    options: Required<Options>
     /**
      * 根数据
      */
-    root: BadeMind.Root
+    root: Root
     /**
      * 获取根直系子代的方位
      * @param id 直系子代 id
      */
-    getRootHeirOrientation: (id: string) => BadeMind.Orientation
+    getRootHeirOrientation: (id: string) => Orientation
     /**
      * 缓存地图
      */
-    cacheMap: BadeMind.CacheMap
+    cacheMap: CacheMap
     /**
      * 上一次的缓存地图
      */
-    preCacheMap?: BadeMind.CacheMap
+    preCacheMap?: CacheMap
     /**
      * 可视窗口
      */
@@ -1114,7 +1141,7 @@ interface StartContext {
     /**
      * 位移/缩放配置
      */
-    transform: BadeMind.Transform
+    transform: Transform
     /**
      * 配置锚点
      */
@@ -1126,7 +1153,7 @@ interface StartContext {
 }
 ```
 
-#### EveryContext
+##### EveryContext
 
 处理每一个节点的上下文
 
@@ -1135,12 +1162,13 @@ interface EveryContext {
     /**
      * 当前处理节点缓存信息
      */
-    cache: BadeMind.NodeCache
-} /**
+    cache: NodeCache
+    /**
      * 是否折叠子代
      * - 根节点为数组，[negative,positive]
      * - 普通节点直接代表是否折叠子代
      * @default false | [false,false]
      */
     fold?: boolean | boolean[]
+}
 ```

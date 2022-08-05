@@ -1,14 +1,14 @@
-import { BadeMind } from '../index'
+import { Mind } from '../index'
 
 export const breadthFirstWalkTree = (
-  node: BadeMind.Node,
+  node: Mind.Node,
   callback: {
-    before: (node: BadeMind.Node) => boolean
-    after: (rank: BadeMind.Node[]) => void
+    before: (node: Mind.Node) => boolean
+    after: (rank: Mind.Node[]) => void
   }
 ) => {
-  const recursion = (rank: BadeMind.Node[]) => {
-    const nextLevel: BadeMind.Node[] = []
+  const recursion = (rank: Mind.Node[]) => {
+    const nextLevel: Mind.Node[] = []
     rank.forEach((item) => {
       if (callback.before(item)) {
         nextLevel.push(...(item.children || []))

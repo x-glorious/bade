@@ -1,7 +1,7 @@
 // 规整模式布局，多用于组织结构等
 // 边界对齐，并且布局规整，父级永远位于子代中间
 import { Helper } from '../../../helper'
-import { BadeMind } from '../../../index'
+import { Mind } from '../../../index'
 import { Process } from '../../index'
 import { DraggableLayout } from '../type'
 import { calcDragAttach } from './calc-drag-attach'
@@ -9,9 +9,9 @@ import { calcDropIndex } from './calc-drop-index'
 import { getNodeCrossBoundary } from './get-node-cross-boundary'
 
 export class StructuredLayout extends DraggableLayout implements Process.Lifecycle {
-  private options: BadeMind.Options
-  private cacheMap: BadeMind.CacheMap
-  private root: BadeMind.Root
+  private options: Mind.Options
+  private cacheMap: Mind.CacheMap
+  private root: Mind.Root
   private getRootHeirOrientation: Process.getRootHeirOrientationFunc
 
   start = (context: Process.StartContext) => {
@@ -28,7 +28,7 @@ export class StructuredLayout extends DraggableLayout implements Process.Lifecyc
     const { cache } = context
     const { node } = cache
     // 区域矩形初始化为本身尺寸，用作计算
-    const localityRect: BadeMind.Size & BadeMind.Coordinate = {
+    const localityRect: Mind.Size & Mind.Coordinate = {
       height: cache.rect.height,
       width: cache.rect.width,
       x: 0,
@@ -75,19 +75,19 @@ export class StructuredLayout extends DraggableLayout implements Process.Lifecyc
       positive: 0
     }
 
-    const vertical = this.options.direction === BadeMind.Direction.y
+    const vertical = this.options.direction === Mind.Direction.y
 
     // 计算子代主轴范围
     // 计算子代副轴尺寸
     children.forEach((child) => {
       const childCache = this.cacheMap.get(child.id)!
-      const childLocalityRect: BadeMind.Size & BadeMind.Coordinate =
+      const childLocalityRect: Mind.Size & Mind.Coordinate =
         childCache.processCache.structuredLayout.localityRect
-      const inParentPosition: BadeMind.Coordinate = { x: 0, y: 0 }
+      const inParentPosition: Mind.Coordinate = { x: 0, y: 0 }
       childCache.processCache.structuredLayout.inParentPosition = inParentPosition
 
       if (vertical) {
-        if (childCache.orientation === BadeMind.Orientation.positive) {
+        if (childCache.orientation === Mind.Orientation.positive) {
           if (childLocalityRect.height > main.positive) {
             main.positive = childLocalityRect.height
           }
@@ -96,7 +96,7 @@ export class StructuredLayout extends DraggableLayout implements Process.Lifecyc
           cross.positive += childLocalityRect.width + this.options.nodeSeparate!
         }
 
-        if (childCache.orientation === BadeMind.Orientation.negative) {
+        if (childCache.orientation === Mind.Orientation.negative) {
           if (childLocalityRect.height > main.negative) {
             main.negative = childLocalityRect.height
           }
@@ -105,7 +105,7 @@ export class StructuredLayout extends DraggableLayout implements Process.Lifecyc
           cross.negative += childLocalityRect.width + this.options.nodeSeparate!
         }
       } else {
-        if (childCache.orientation === BadeMind.Orientation.positive) {
+        if (childCache.orientation === Mind.Orientation.positive) {
           if (childLocalityRect.width > main.positive) {
             main.positive = childLocalityRect.width
           }
@@ -114,7 +114,7 @@ export class StructuredLayout extends DraggableLayout implements Process.Lifecyc
           cross.positive += childLocalityRect.height + this.options.nodeSeparate!
         }
 
-        if (childCache.orientation === BadeMind.Orientation.negative) {
+        if (childCache.orientation === Mind.Orientation.negative) {
           if (childLocalityRect.width > main.negative) {
             main.negative = childLocalityRect.width
           }
@@ -214,14 +214,14 @@ export class StructuredLayout extends DraggableLayout implements Process.Lifecyc
     // 计算子代位于父级区域内的坐标
     children.forEach((child) => {
       const childCache = this.cacheMap.get(child.id)!
-      const inParentPosition: BadeMind.Coordinate =
+      const inParentPosition: Mind.Coordinate =
         childCache.processCache.structuredLayout.inParentPosition
-      const childLocalityRect: BadeMind.Size & BadeMind.Coordinate =
+      const childLocalityRect: Mind.Size & Mind.Coordinate =
         childCache.processCache.structuredLayout.localityRect
 
       if (vertical) {
         // y 轴正向，位于节点上方
-        if (childCache.orientation === BadeMind.Orientation.positive) {
+        if (childCache.orientation === Mind.Orientation.positive) {
           inParentPosition.y =
             localityRect.y -
             cache.rect.height / 2 -
@@ -230,7 +230,7 @@ export class StructuredLayout extends DraggableLayout implements Process.Lifecyc
           inParentPosition.x += childCrossOriginDiff.positive
         }
         // y 轴负向，位于节点下方
-        if (childCache.orientation === BadeMind.Orientation.negative) {
+        if (childCache.orientation === Mind.Orientation.negative) {
           inParentPosition.y =
             localityRect.y +
             cache.rect.height / 2 +
@@ -240,7 +240,7 @@ export class StructuredLayout extends DraggableLayout implements Process.Lifecyc
         }
       } else {
         // x 轴，节点正向，右侧
-        if (childCache.orientation === BadeMind.Orientation.positive) {
+        if (childCache.orientation === Mind.Orientation.positive) {
           inParentPosition.x =
             localityRect.x +
             cache.rect.width / 2 +
@@ -249,7 +249,7 @@ export class StructuredLayout extends DraggableLayout implements Process.Lifecyc
           inParentPosition.y += childCrossOriginDiff.positive
         }
         // x 轴，节点负向，左侧
-        if (childCache.orientation === BadeMind.Orientation.negative) {
+        if (childCache.orientation === Mind.Orientation.negative) {
           inParentPosition.x =
             localityRect.x -
             cache.rect.width / 2 -
@@ -269,7 +269,7 @@ export class StructuredLayout extends DraggableLayout implements Process.Lifecyc
       height: rootCache.processCache.structuredLayout.localityRect.height,
       width: rootCache.processCache.structuredLayout.localityRect.width
     }
-    const vertical = this.options.direction === BadeMind.Direction.y
+    const vertical = this.options.direction === Mind.Direction.y
 
     Helper.breadthFirstWalkTree(rootNode, {
       after: () => {
@@ -297,17 +297,17 @@ export class StructuredLayout extends DraggableLayout implements Process.Lifecyc
         else {
           const parentCache = this.cacheMap.get(cache.parent.id)!
           // 坐标系原点
-          const origin = parentCache.processCache.structuredLayout.origin as BadeMind.Coordinate
+          const origin = parentCache.processCache.structuredLayout.origin as Mind.Coordinate
           // 自身所领导区域位于父区域的位置
-          const inParentPosition: BadeMind.Coordinate =
+          const inParentPosition: Mind.Coordinate =
             cache.processCache.structuredLayout.inParentPosition
           // 自身所领导的区域容器矩形信息
-          const localityReact: BadeMind.Size & BadeMind.Coordinate =
+          const localityReact: Mind.Size & Mind.Coordinate =
             cache.processCache.structuredLayout.localityRect
 
           // 节点所领导区域左上角坐标
           // 即，领导区域的原点
-          const nodeOrigin: BadeMind.Coordinate = {
+          const nodeOrigin: Mind.Coordinate = {
             x: origin.x + inParentPosition.x - localityReact.width / 2,
             y: origin.y + inParentPosition.y - localityReact.height / 2
           }
@@ -318,7 +318,7 @@ export class StructuredLayout extends DraggableLayout implements Process.Lifecyc
           cache.rect.y = localityReact.y + nodeOrigin.y
         }
 
-        const crossBoundary: [BadeMind.Range<number>, BadeMind.Range<number>] =
+        const crossBoundary: [Mind.Range<number>, Mind.Range<number>] =
           cache.processCache.structuredLayout.crossBoundary
         // 计算节点交叉轴范围
         if (vertical) {

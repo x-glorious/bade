@@ -1,33 +1,28 @@
 {
   "name": "bade-mind-react",
   "version": "1.0.1",
-  "description": "Bade mind react wrapper component",
+  "description": "",
   "main": "./lib/index.js",
   "module": "./lib/index.module.js",
   "types": "./lib/index.d.ts",
   "files": [
     "lib"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ordinaryP/bade/tree/main/packages/mind-react"
-  },
   "scripts": {
     "demo": "parcel demo/index.html",
     "clear": "rm -rf lib",
     "compile": "npm run clear && rollup -c",
     "compile:watch": "npm run clear && rollup -cw"
   },
-  "keywords": [
-    "bade",
-    "mind",
-    "react",
-    "d3"
-  ],
+  "keywords": ["mind","javascript","react","typescript","custom","render props","svg","dom","bade"],
   "author": "",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/x-glorious/bade.git"
+  },
   "dependencies": {
-    "bade-mind": "^1.2.0",
+    "bade-mind": "^1.0.1",
     "classnames": "^2.3.1",
     "d3": "^7.4.4"
   },

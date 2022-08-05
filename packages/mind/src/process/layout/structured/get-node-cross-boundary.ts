@@ -1,5 +1,5 @@
 import { Helper } from '../../../helper'
-import { BadeMind } from '../../../index'
+import { Mind } from '../../../index'
 
 /**
  * 获取节点交叉轴边界
@@ -10,16 +10,16 @@ import { BadeMind } from '../../../index'
  * @param cacheMap
  */
 export const getNodeCrossBoundary = (
-  cache: BadeMind.NodeCache,
-  children: BadeMind.Node[] | undefined,
+  cache: Mind.NodeCache,
+  children: Mind.Node[] | undefined,
   vertical: boolean,
-  cacheMap: BadeMind.CacheMap
-): BadeMind.Range<number> => {
-  const boundary: BadeMind.Range<number> = {
+  cacheMap: Mind.CacheMap
+): Mind.Range<number> => {
+  const boundary: Mind.Range<number> = {
     max: Infinity,
     min: -Infinity
   }
-  const selfBoundary: BadeMind.Range<number> = {
+  const selfBoundary: Mind.Range<number> = {
     max: Infinity,
     min: -Infinity
   }

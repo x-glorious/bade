@@ -1,21 +1,21 @@
 import React from 'react'
 
-import { BadeMind } from 'bade-mind'
+import { Mind } from 'bade-mind'
 
-import { Graphic as _Graphic } from './component'
+import { View as _View } from './component'
 
-export namespace BadeMindReact {
-  export const Graphic = _Graphic
+export namespace MindReact {
+  export const View = _View
 
   export interface GraphicRef {
-    mind?: BadeMind.Graphic
+    mind?: Mind.Graphic
   }
 
-  export interface Node extends Omit<BadeMind.Node, 'sizeof' | 'children'> {
+  export interface Node extends Omit<Mind.Node, 'sizeof' | 'children'> {
     /**
      * 当设置 size 时，将会禁止自动测量，提升速率
      */
-    size?: BadeMind.Size
+    size?: Mind.Size
     /**
      * 节点是否受到保护（超出可视区域不会被销毁，但会设置`visible=hidden`）
      * @default false
@@ -61,35 +61,35 @@ export namespace BadeMindReact {
   export type DragEvent = (event: {
     node: Node
     attach:
-    | {
-      parent: Node
-      orientation: BadeMind.Orientation
-    }
-    | undefined
-    mirrorPosition: BadeMind.Coordinate
+      | {
+          parent: Node
+          orientation: Mind.Orientation
+        }
+      | undefined
+    mirrorPosition: Mind.Coordinate
   }) => void
 
   export type DragEndEvent = (event: {
     node: Node
     attach:
-    | {
-      parent: Node
-      orientation: BadeMind.Orientation
-      index: number
-    }
-    | undefined
+      | {
+          parent: Node
+          orientation: Mind.Orientation
+          index: number
+        }
+      | undefined
     original: {
       parent: Node
-      orientation: BadeMind.Orientation
+      orientation: Mind.Orientation
     }
   }) => void
 
-  export interface GraphicProps {
+  export interface ViewProps {
     /**
      * bade mind 配置项
      * - 做浅比较，引用出现改变则重新绘制
      */
-    options?: BadeMind.Options
+    options?: Mind.Options
     /**
      * 脑图结构数据
      * - 做浅比较，引用出现改变则重新绘制
@@ -109,6 +109,7 @@ export namespace BadeMindReact {
     /**
      * 渲染锚点数据
      * - 在启动重渲染时保持 anchor 对应节点在屏幕上的相对位置不变
+     * - 如不设定，则清空锚点，根节点居中，缩放比归一
      */
     anchor?: string
     /**
@@ -124,7 +125,7 @@ export namespace BadeMindReact {
      * - 即，此时，脑图所有的状态以及渲染已经完成
      * @param mind 脑图控制对象
      */
-    onUpdated?: (mind: BadeMind.Graphic) => void
+    onUpdated?: (mind: Mind.Graphic) => void
     /**
      * 注入到根上的 `class`
      */

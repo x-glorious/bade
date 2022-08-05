@@ -8,10 +8,10 @@ import React, {
   useState
 } from 'react'
 
-import { BadeMind } from 'bade-mind'
+import { Mind } from 'bade-mind'
 import Classnames from 'classnames'
 
-import { BadeMindReact } from '../'
+import { MindReact } from '../'
 import { Scrollbar } from '../scrollbar'
 import { classNameWrapper } from '../tools/class-name-wrapper'
 import { Nodes } from './nodes'
@@ -19,8 +19,8 @@ import { Nodes } from './nodes'
 // @ts-ignore-next-line
 import Style from './index.module.scss'
 
-export const Graphic = forwardRef(
-  (props: BadeMindReact.GraphicProps, ref: React.Ref<BadeMindReact.GraphicRef>) => {
+export const View = forwardRef(
+  (props: MindReact.ViewProps, ref: React.Ref<MindReact.GraphicRef>) => {
     const {
       className,
       style,
@@ -36,12 +36,14 @@ export const Graphic = forwardRef(
       onDrag
     } = props
 
-    const [mind, setMind] = useState<BadeMind.Graphic | undefined>()
+    const [mind, setMind] = useState<Mind.Graphic | undefined>()
     const [viewport, setViewport] = useState<HTMLElement | null>()
     const [container, setContainer] = useState<HTMLElement | null>()
-    const [transform, setTransform] = useState<BadeMind.Transform | undefined>()
+    const [transform, setTransform] = useState<Mind.Transform | undefined>()
     const [isInDragMove, setIsInDragMove] = useState(false)
     const [renderChangeToggle, setRenderChangeToggle] = useState(0)
+    const [refreshMindLayoutToggle, setRefreshMindLayoutToggle] = useState(0)
+
     // 脑图更新事件引用
     const onUpdatedRef = useRef<typeof onUpdated>(onUpdated)
 
@@ -65,7 +67,7 @@ export const Graphic = forwardRef(
     }, [mind])
 
     // transform 值变化事件
-    const onTransformChange = useCallback((transform: BadeMind.Transform) => {
+    const onTransformChange = useCallback((transform: Mind.Transform) => {
       setTransform((pre) => {
         if (transform.x === pre?.x && transform.y === pre?.y && transform.scale === pre?.scale) {
           return pre
@@ -76,7 +78,7 @@ export const Graphic = forwardRef(
     }, [])
 
     // 可视节点变化事件
-    const onNodeVisibleChange = useCallback((_nodes: BadeMind.Node[]) => {
+    const onNodeVisibleChange = useCallback((_nodes: Mind.Node[]) => {
       // 可渲染节点变化，引起node内容重渲染
       setRenderChangeToggle((pre) => pre + 1)
     }, [])
@@ -93,9 +95,9 @@ export const Graphic = forwardRef(
       }
     }, [])
 
-    const options = useMemo<BadeMind.Options>(() => {
+    const options = useMemo<Mind.Options>(() => {
       // 展开，防止修改源数据
-      const wrapper: BadeMind.Options = { ...(settingOptions || {}) }
+      const wrapper: Mind.Options = { ...(settingOptions || {}) }
       wrapper.callback = { ...(wrapper.callback || {}) }
       wrapper.event = { ...(wrapper.event || {}) }
 
@@ -135,7 +137,7 @@ export const Graphic = forwardRef(
     // 获取到对应dom，初始化mind
     useEffect(() => {
       if (viewport && container) {
-        setMind(new BadeMind.Graphic(viewport, container))
+        setMind(new Mind.Graphic(viewport, container))
       }
     }, [viewport, container])
 
@@ -151,11 +153,15 @@ export const Graphic = forwardRef(
       if (mind && data) {
         mind.setOptions(options)
         // 启动重新渲染操作
-        mind.setData(data as BadeMind.Root)
+        mind.setData(data as Mind.Root)
         // 通知外部，数据更新已经完成
         onUpdatedRef.current && onUpdatedRef.current(mind)
       }
-    }, [mind, data, options])
+    }, [mind, data, options, refreshMindLayoutToggle])
+
+    useEffect(() => {
+      setRefreshMindLayoutToggle((pre) => pre + 1)
+    }, [render])
 
     useEffect(() => {
       if (viewport) {
@@ -213,4 +219,4 @@ export const Graphic = forwardRef(
   }
 )
 
-Graphic.displayName = 'BadeMindReact.Graphic'
+View.displayName = 'MindReact.View'

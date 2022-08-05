@@ -1,4 +1,4 @@
-import { BadeMind } from '../index'
+import { Mind } from '../index'
 import { Process } from '../process'
 import { Helper } from './index'
 
@@ -10,7 +10,7 @@ import { Helper } from './index'
  * @param getRootHeirOrientation
  */
 export const getLayoutCalcChildren = (
-  node: BadeMind.Node,
+  node: Mind.Node,
   rootId: string,
   getRootHeirOrientation: Process.getRootHeirOrientationFunc
 ) => {
@@ -27,14 +27,14 @@ export const getLayoutCalcChildren = (
     // 只有 negative 折叠
     if (fold[0]) {
       return children.filter(
-        (item) => getRootHeirOrientation(item.id) === BadeMind.Orientation.positive
+        (item) => getRootHeirOrientation(item.id) === Mind.Orientation.positive
       )
     }
 
     // 只有 positive 折叠
     if (fold[1]) {
       return children.filter(
-        (item) => getRootHeirOrientation(item.id) === BadeMind.Orientation.negative
+        (item) => getRootHeirOrientation(item.id) === Mind.Orientation.negative
       )
     }
 

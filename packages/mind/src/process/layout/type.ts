@@ -1,5 +1,5 @@
 import { Helper } from '../../helper'
-import { BadeMind } from '../../index'
+import { Mind } from '../../index'
 
 // @ts-ignore
 export class DraggableLayout {
@@ -15,13 +15,13 @@ export class DraggableLayout {
    * @return 如果没有合法的节点关联，则返回`undefined`
    */
   public static calcDragAttach = (context: {
-    cacheMap: BadeMind.CacheMap
-    draggingRect: BadeMind.Coordinate & BadeMind.Size
-    canBeAttachedNodes: BadeMind.Node[]
-    ignoreNodes: BadeMind.Node[]
-    root: BadeMind.Root
-    options: Required<BadeMind.Options>
-  }): BadeMind.DragAttach | undefined => {
+    cacheMap: Mind.CacheMap
+    draggingRect: Mind.Coordinate & Mind.Size
+    canBeAttachedNodes: Mind.Node[]
+    ignoreNodes: Mind.Node[]
+    root: Mind.Root
+    options: Required<Mind.Options>
+  }): Mind.DragAttach | undefined => {
     // 此处是为了 ts 报错
     context = context
     throw Helper.error('DraggableLayout static calcDragAttach must be implemented')
@@ -33,16 +33,16 @@ export class DraggableLayout {
    * @param context.cacheMap 缓存地图
    * @param context.attachedNodeChildren 关联节点子代
    * @param context.dropPosition 拖拽结束位置
-   * @oaram context.Node 拖拽节点
+   * @param context.root 根节点
    */
   public static calcDropIndex = (context: {
-    cacheMap: BadeMind.CacheMap
-    attachedNodeChildren: BadeMind.Node[] | undefined
-    dropPosition: BadeMind.Coordinate
-    attachedNode: BadeMind.Node
-    dragNode: BadeMind.Node
-    root: BadeMind.Root
-    options: BadeMind.Options
+    cacheMap: Mind.CacheMap
+    attachedNodeChildren: Mind.Node[] | undefined
+    dropPosition: Mind.Coordinate
+    attachedNode: Mind.Node
+    dragNode: Mind.Node
+    root: Mind.Root
+    options: Mind.Options
   }): number => {
     // 此处是为了 ts 报错
     context = context

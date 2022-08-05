@@ -1,24 +1,24 @@
 import { Helper } from '../helper'
-import { BadeMind } from '../index'
+import { Mind } from '../index'
 import { Process } from '../process'
 import { DraggableLayout } from '../process/layout/type'
 import { TemporaryLine } from '../render/connect/temporary-line'
 
 export class Drag {
-  private readonly options: Required<BadeMind.Options>
-  private readonly cacheMap: BadeMind.CacheMap
-  private readonly root: BadeMind.Root
-  private readonly dragNode: BadeMind.Node
-  private readonly ignoreNodes: BadeMind.Node[]
+  private readonly options: Required<Mind.Options>
+  private readonly cacheMap: Mind.CacheMap
+  private readonly root: Mind.Root
+  private readonly dragNode: Mind.Node
+  private readonly ignoreNodes: Mind.Node[]
   private temporaryLine: TemporaryLine
   private readonly container: HTMLElement
   private readonly draggableLayout: typeof DraggableLayout
 
   constructor(context: {
-    options: Required<BadeMind.Options>
-    cacheMap: BadeMind.CacheMap
-    root: BadeMind.Root
-    dragNode: BadeMind.Node
+    options: Required<Mind.Options>
+    cacheMap: Mind.CacheMap
+    root: Mind.Root
+    dragNode: Mind.Node
     container: HTMLElement
   }) {
     const { options, root, dragNode, cacheMap, container } = context
@@ -55,10 +55,10 @@ export class Drag {
    * @return 期望插入位置
    */
   public calcDropIndex = (
-    attachedNodeChildren: BadeMind.Node[] | undefined,
-    dropPosition: BadeMind.Coordinate,
-    dragNode: BadeMind.Node,
-    attachedNode: BadeMind.Node
+    attachedNodeChildren: Mind.Node[] | undefined,
+    dropPosition: Mind.Coordinate,
+    dragNode: Mind.Node,
+    attachedNode: Mind.Node
   ) => {
     return this.draggableLayout.calcDropIndex({
       attachedNode,
@@ -77,7 +77,7 @@ export class Drag {
    * @param canBeAttachedNodes 需要搜索的可关联节点
    * @return 链接关联信息
    */
-  public drag = (position: BadeMind.Coordinate, canBeAttachedNodes: BadeMind.Node[]) => {
+  public drag = (position: Mind.Coordinate, canBeAttachedNodes: Mind.Node[]) => {
     const cache = this.cacheMap.get(this.dragNode.id)
 
     // 根节点不可拖拽

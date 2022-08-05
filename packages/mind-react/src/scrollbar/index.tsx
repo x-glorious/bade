@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 
-import { BadeMind } from 'bade-mind'
+import { Mind } from  'bade-mind'
 
 import { Axis } from './axis'
 
@@ -12,9 +12,9 @@ interface Range {
 export const Scrollbar = (props: {
   viewport?: HTMLElement | null
   container?: HTMLElement | null
-  mind?: BadeMind.Graphic | undefined
-  transform?: BadeMind.Transform | undefined
-  options: BadeMind.Options
+  mind?: Mind.Graphic | undefined
+  transform?: Mind.Transform | undefined
+  options: Mind.Options
 }) => {
   const { viewport, container, mind, transform, options } = props
   const [boundary, setBoundary] = useState<{
@@ -30,11 +30,11 @@ export const Scrollbar = (props: {
       min: 0
     }
   })
-  const [viewportSize, setViewportSize] = useState<BadeMind.Size>({
+  const [viewportSize, setViewportSize] = useState<Mind.Size>({
     height: 0,
     width: 0
   })
-  const [containerSize, setContainerSize] = useState<BadeMind.Size>({
+  const [containerSize, setContainerSize] = useState<Mind.Size>({
     height: 0,
     width: 0
   })

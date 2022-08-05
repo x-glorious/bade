@@ -1,4 +1,4 @@
-import { BadeMind } from '../index'
+import { Mind } from '../index'
 import { Process } from '../process'
 
 /**
@@ -9,9 +9,9 @@ import { Process } from '../process'
  * @param getRootHeirOrientation
  */
 export const judgeIfHeirAndFold = (
-  node: BadeMind.Node,
-  parent: BadeMind.Node | undefined,
-  root: BadeMind.Root,
+  node: Mind.Node,
+  parent: Mind.Node | undefined,
+  root: Mind.Root,
   getRootHeirOrientation: Process.getRootHeirOrientationFunc
 ) => {
   // 是否为根节点直系子代
@@ -20,12 +20,12 @@ export const judgeIfHeirAndFold = (
   // 此处处理根节点只有左侧折叠或者右侧折叠的情况
   if (isRootChild && root.node.fold) {
     // negative 折叠，并且节点为root直系negative
-    if (root.node.fold[0] && getRootHeirOrientation(node.id) === BadeMind.Orientation.negative) {
+    if (root.node.fold[0] && getRootHeirOrientation(node.id) === Mind.Orientation.negative) {
       return true
     }
 
     // positive 折叠，并且节点为root直系positive
-    if (root.node.fold[1] && getRootHeirOrientation(node.id) === BadeMind.Orientation.positive) {
+    if (root.node.fold[1] && getRootHeirOrientation(node.id) === Mind.Orientation.positive) {
       return true
     }
   }

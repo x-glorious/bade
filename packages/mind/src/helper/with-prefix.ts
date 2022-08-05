@@ -1,1 +1,1 @@
-export const withPrefix = (message: string) => `bade-mind__${message}`
+export const withPrefix = (message: string) => `mind__${message}`

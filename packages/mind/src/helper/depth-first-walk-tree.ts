@@ -1,4 +1,4 @@
-import { BadeMind } from '../index'
+import { Mind } from '../index'
 
 /**
  * 深度优先遍历
@@ -6,13 +6,13 @@ import { BadeMind } from '../index'
  * @param callback before:递归之前(返回 true 代表继续搜索子代，false代表终止),after:子代递归完成返回
  */
 export const depthFirstWalkTree = (
-  root: BadeMind.Node,
+  root: Mind.Node,
   callback: {
-    before: (node: BadeMind.Node, parent?: BadeMind.Node) => boolean
-    after: (node: BadeMind.Node, parent?: BadeMind.Node) => void
+    before: (node: Mind.Node, parent?: Mind.Node) => boolean
+    after: (node: Mind.Node, parent?: Mind.Node) => void
   }
 ) => {
-  const recursion = (now: BadeMind.Node, parent?: BadeMind.Node) => {
+  const recursion = (now: Mind.Node, parent?: Mind.Node) => {
     if (callback.before(now, parent)) {
       ;(now.children || []).forEach((n) => recursion(n, now))
     }
