@@ -70,49 +70,42 @@ export class Zoom {
   }
 
   public scale = (scale: number, point?: Mind.Coordinate, duration = 0) => {
-    Helper.mircoTask(() => {
-      if (duration) {
-        D3.select(this.viewport)
-          .transition()
-          .duration(duration)
-          .call(this.controller.scaleTo, scale, point && [point.x, point.y])
-      } else {
-        D3.select(this.viewport).call(this.controller.scaleTo, scale, point && [point.x, point.y])
-      }
-    })
+    if (duration) {
+      D3.select(this.viewport)
+        .transition()
+        .duration(duration)
+        .call(this.controller.scaleTo, scale, point && [point.x, point.y])
+    } else {
+      D3.select(this.viewport).call(this.controller.scaleTo, scale, point && [point.x, point.y])
+    }
   }
 
   public translate = (translate: Mind.Coordinate, duration = 0) => {
-    Helper.mircoTask(() => {
-      if (duration) {
-        D3.select(this.viewport)
-          .transition()
-          .duration(duration)
-          .call(this.controller.translateBy, translate.x, translate.y)
-      } else {
-        D3.select(this.viewport).call(this.controller.translateBy, translate.x, translate.y)
-      }
-    })
+    if (duration) {
+      D3.select(this.viewport)
+        .transition()
+        .duration(duration)
+        .call(this.controller.translateBy, translate.x, translate.y)
+    } else {
+      D3.select(this.viewport).call(this.controller.translateBy, translate.x, translate.y)
+    }
   }
 
   public setTransform = (transform: Mind.Transform, duration = 0) => {
-    // 添加进入微任务队列，避免影响主计算流程
-    Helper.mircoTask(() => {
-      if (duration) {
-        D3.select(this.viewport)
-          .transition()
-          .duration(duration)
-          .call(
-            this.controller.transform,
-            new D3.ZoomTransform(transform.scale, transform.x, transform.y)
-          )
-      } else {
-        D3.select(this.viewport).call(
+    if (duration) {
+      D3.select(this.viewport)
+        .transition()
+        .duration(duration)
+        .call(
           this.controller.transform,
           new D3.ZoomTransform(transform.scale, transform.x, transform.y)
         )
-      }
-    })
+    } else {
+      D3.select(this.viewport).call(
+        this.controller.transform,
+        new D3.ZoomTransform(transform.scale, transform.x, transform.y)
+      )
+    }
   }
 
   public destroy = () => {
