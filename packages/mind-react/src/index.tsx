@@ -22,6 +22,11 @@ export namespace MindReact {
      */
     beProtected?: boolean
     /**
+     * 是否需要更新节点尺寸（设置为 true 之后会更新一次节点尺寸，后组件将自动设置此值为false）
+     * @default false
+     */
+    needUpdateSize?: boolean
+    /**
      * 节点总是可见（超出可视区域不会被销毁也不会改变`visible`状态）
      * @default false
      */

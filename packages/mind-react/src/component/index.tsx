@@ -42,8 +42,6 @@ export const View = forwardRef(
     const [transform, setTransform] = useState<Mind.Transform | undefined>()
     const [isInDragMove, setIsInDragMove] = useState(false)
     const [renderChangeToggle, setRenderChangeToggle] = useState(0)
-    const [refreshMindLayoutToggle, setRefreshMindLayoutToggle] = useState(0)
-
     // 脑图更新事件引用
     const onUpdatedRef = useRef<typeof onUpdated>(onUpdated)
 
@@ -54,6 +52,7 @@ export const View = forwardRef(
       }),
       [mind]
     )
+
     // 同步事件
     useEffect(() => {
       onUpdatedRef.current = onUpdated
@@ -157,10 +156,11 @@ export const View = forwardRef(
         // 通知外部，数据更新已经完成
         onUpdatedRef.current && onUpdatedRef.current(mind)
       }
-    }, [mind, data, options, refreshMindLayoutToggle])
+    }, [mind, data, options])
 
     useEffect(() => {
-      setRefreshMindLayoutToggle((pre) => pre + 1)
+      // 重布局计算
+      mind?.refresh()
     }, [render])
 
     useEffect(() => {

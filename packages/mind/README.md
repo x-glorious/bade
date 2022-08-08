@@ -454,6 +454,12 @@ function setData(root: Mind.Root): void
 
 - **@param** `root` 根数据
 
+#### refresh
+
+刷新布局，启动重渲染
+
+其用法与`setData`一致，使用的是内部存储的数据
+
 ### Drag
 
 拖动逻辑相关控制类，实现拖拽计算逻辑，不与特定手势关联
