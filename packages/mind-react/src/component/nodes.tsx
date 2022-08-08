@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { useCallback, useMemo, useRef, useState } from 'react'
 
-import { Mind } from  'bade-mind'
+import { Mind } from 'bade-mind'
 import Classnames from 'classnames'
 
 import { useDrag } from '../hook/use-drag'
@@ -45,11 +45,9 @@ export const Nodes = (props: NodesProps) => {
             updateToDate: false
           })
         }
-        // updateToDate=false 标识，标识，数据已过期
+        // 已存在，沿用老数据
         else {
-          const pre = preSizeCacheMap.get(node.id)!
-          pre.updateToDate = false
-          sizeCacheMap.current.set(node.id, pre)
+          sizeCacheMap.current.set(node.id, preSizeCacheMap.get(node.id)!)
         }
       }) as MindReact.Node[]
     }
@@ -80,11 +78,16 @@ export const Nodes = (props: NodesProps) => {
       const position = mind?.getNodeAnchorCoordinate(node.id) || { x: 0, y: 0 }
       const visible = mind?.judgeNodeVisible(node.id) || node.alwaysVisible
       const sizeCache = sizeCacheMap.current.get(node.id)!
-      // 当尺寸数据并非最新的时候，一下情况需要更新其数据
+      // 以下情况需要更新其数据
+      // - 缓存过期
       // - 尺寸不存在
-      // - 禁用尺寸缓存时
+      // - 禁用尺寸缓存
+      // - 外部设置需要更新尺寸
       let needUpdateSize =
-        !sizeCache.updateToDate && (sizeCache.size.width < 0 || node.disableSizeCache)
+        !sizeCache.updateToDate ||
+        sizeCache.size.width < 0 ||
+        node.disableSizeCache ||
+        node.needUpdateSize
       // node size 优先级最高，外界已测量好尺寸，故而，无需再次测量
       if (node.size) {
         needUpdateSize = false
@@ -123,16 +126,13 @@ export const Nodes = (props: NodesProps) => {
             data-node-draggable={String(draggable)}
             ref={(element) => {
               if (element && needUpdateSize) {
-                ;(node as Mind.Node).sizeof = () => {
-                  // 标识已经获取了最新数据
-                  sizeCache.updateToDate = true
-                  sizeCache.size.width = element.clientWidth
-                  sizeCache.size.height = element.clientHeight
-                  return {
-                    height: element.clientHeight,
-                    width: element.clientWidth
-                  }
-                }
+                // 标识已经获取了最新数据
+                sizeCache.updateToDate = true
+                sizeCache.size.width = element.clientWidth
+                sizeCache.size.height = element.clientHeight
+                ;(node as Mind.Node).sizeof = () => sizeCache.size
+                // 更新完成之后设置为false
+                node.needUpdateSize = false
               }
             }}
           >

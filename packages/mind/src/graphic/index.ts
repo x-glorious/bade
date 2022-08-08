@@ -356,6 +356,15 @@ export class Graphic {
   }
 
   /**
+   * 刷新
+   */
+  public refresh = () => {
+    if (this.root) {
+      this.setData(this.root)
+    }
+  }
+
+  /**
    * 同步渲染层尺寸到 container 中
    */
   private syncLayoutSize = () => {

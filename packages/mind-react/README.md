@@ -240,16 +240,34 @@ ReactDom.render(<Demo />, document.getElementById('root'))
 
 #### Props
 
-| 参数             | 类型                  | 默认值       | 必填  | 说明                                                                                                          |
-|:-------------- |:------------------- | --------- |:---:|:----------------------------------------------------------------------------------------------------------- |
-| options        | Mind.Options        | undefined | 否   | mind配置项<br />- 仅做浅比较，引用出现改变则会引起重新绘制                                                                         |
-| data           | Root                | 无         | 是   | 脑图结构数据<br />- 做浅比较，引用出现改变则重新绘制<br />- 如果节点**长宽固定值**，则，请直接设置 size，避免性能损耗                                     |
-| render         | Render              | 无         | 是   | 节点渲染器<br/>- 做浅比较，引用出现改变则重新绘制<br/>- 请在节点**第一次渲染时就确定其尺寸**，当节点尺寸改变时，需要修改`data`引用，唤起重计算<br/>- 请保持镜像节点尺寸与源节点尺寸一致 |
-| anchor         | string              | undefined | 否   | 渲染锚点数据<br />- 在启动重渲染时保持 anchor 对应节点在屏幕上的相对位置不变<br/>- 如不设定，则清空锚点，根节点居中，缩放比归一                                 |
-| scrollbar      | boolean             | false     | 否   | 是否展示滚动条<br />- 当展示滚动条时，将会自动限定位移区域<br />- 当隐藏滚动条时，位移范围无限制                                                    |
-| wheelMoveSpeed | number              | 0.5       | 否   | 滚轮移动速度                                                                                                      |
-| className      | string              | undefined | 否   | 注入到根上的 `class`                                                                                              |
-| style          | React.CSSProperties | undefined | 否   | 注入到根上的 `style`                                                                                              |
+| 参数             | 类型                  | 默认值       | 必填  | 说明             |
+|:-------------- |:------------------- | --------- |:---:|:-------------- |
+| options        | Mind.Options        | undefined | 否   | mind配置项        |
+| data           | Root                | 无         |     | 数据源            |
+| render         | Render              | 无         | 是   | 节点渲染器          |
+| anchor         | string              | undefined | 否   | 渲染锚点数据         |
+| scrollbar      | boolean             | false     | 否   | 是否展示滚动条        |
+| wheelMoveSpeed | number              | 0.5       | 否   | 滚轮移动速度         |
+| className      | string              | undefined | 否   | 注入到根上的 `class` |
+| style          | React.CSSProperties | undefined | 否   | 注入到根上的 `style` |
+
+---
+
+**options、data、render**
+
+- 仅做**浅比较**
+
+- 改变则**会**引起 **布局重计算**
+
+- 改变**会**引起 **节点规则内尺寸刷新**
+  
+  1. `node.size` 存在，则直接使用其数据
+  
+  2. 如果`node.disableSizeCache=true`，则，刷新节点尺寸
+  
+  3. 如果外部设置`node.needUpdateSize=true`，则，**本次**节点尺寸会被刷新
+  
+  4. 如上述条件都不符合，并且**节点之前已存在**，则，**节点不刷新其自身尺寸**
 
 #### Events
 
@@ -262,12 +280,19 @@ ReactDom.render(<Demo />, document.getElementById('root'))
 
 ### Node
 
+所有的节点数据改变之后，都需要更新`data`的引用，以通知组件
+
 ```tsx
 interface Node extends Omit<Mind.Node, 'sizeof' | 'children'> {
     /**
      * 当设置 size 时，将会禁止自动测量，提升速率
      */
     size?: Mind.Size
+    /**
+     * 是否需要更新节点尺寸（设置为true之后会更新一次节点尺寸，后组件将自动设置此值为false）
+     * @default false
+     */
+    needUpdateSize?: boolean
     /**
      * 节点是否受到保护（超出可视区域不会被销毁，但会设置`visible=hidden`）
      * @default false
