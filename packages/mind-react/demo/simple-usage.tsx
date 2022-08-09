@@ -38,7 +38,7 @@ const generateChildren = () => {
 }
 
 const Render = (props: {
-  node: Mind.Node
+  node: MindReact.Node
   onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
   onFold: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
 }) => {
