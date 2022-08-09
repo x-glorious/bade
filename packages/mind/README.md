@@ -6,6 +6,8 @@
 - 内核直接使用比较复杂，可使用UI框架封装版本
   - React 框架：`bade-mind-react`
 
+[Live demo](https://codesandbox.io/s/bade-mind-l6zr1b)
+
 ## Installation
 
 ```shell

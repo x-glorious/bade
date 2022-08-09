@@ -10,6 +10,8 @@
 
 - **实现**拖拽功能（内置布局只有`structured`支持拖拽）
 
+[Live demo](https://codesandbox.io/s/bade-mind-react-iig1jh)
+
 ## Installation
 
 ```shell
@@ -109,7 +111,7 @@ const generateChildren = () => {
 }
 
 const Render = (props: {
-  node: Mind.Node
+  node: MindReact.Node
   onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
   onFold: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
 }) => {
@@ -429,5 +431,5 @@ onUpdated={(mind) => {
             y: Mind.RelativeY.top
         }
     })
-}
+}MindReact.Node
 ```
