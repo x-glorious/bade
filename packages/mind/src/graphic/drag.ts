@@ -28,7 +28,7 @@ export class Drag {
     this.cacheMap = cacheMap
     this.container = container
     this.draggableLayout = Process.getLayoutProcess(options) as any
-    // 检查当前使用的算法是否支持拖拽操作
+    // 检查当前使用的算法是否支持拖拽操作，如不支持，则报错
     if (!DraggableLayout.isValidExtendsClass(this.draggableLayout)) {
       if (options.layoutProcess) {
         throw Helper.error(
