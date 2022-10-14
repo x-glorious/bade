@@ -354,6 +354,16 @@ export namespace Mind {
      * 缩放尺度控制
      */
     zoomExtent?: ZoomExtent
+    /**
+     * 通过此选项自定义拖动 & 缩放的按钮
+     * 例如：默认的定义 (event) => {
+     * // 修改默认，手势
+     * // 右键移动，ctrl+滚轮 缩放
+     * return event.button === 2 || (event.ctrlKey && event.type === 'wheel')
+    }
+     * 
+     */
+    controlFilter?: (evnet) => boolean
   }
 
   /**

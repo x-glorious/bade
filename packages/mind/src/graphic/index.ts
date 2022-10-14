@@ -37,7 +37,7 @@ export class Graphic {
     this.viewport = viewport
     this.container = container
     this.options = WithDefault.options(options)
-    this.zoom = new Zoom(viewport)
+    this.zoom = new Zoom(viewport, options?.controlFilter)
     this.syncZoomExtentOptions()
     this.bindEventListener()
   }

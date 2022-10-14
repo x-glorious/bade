@@ -9,13 +9,14 @@ export class Zoom {
   private callback?: (transform: Mind.Transform) => void
   private event?: Mind.ZoomEvent
 
-  constructor(viewport: HTMLElement) {
+  constructor(viewport: HTMLElement, controlFilter?: (event) => boolean) {
     this.viewport = viewport
-    this.controller.filter((event) => {
+    const filter = controlFilter || ((event) => {
       // 修改默认，手势
       // 右键移动，ctrl+滚轮 缩放
       return event.button === 2 || (event.ctrlKey && event.type === 'wheel')
     })
+    this.controller.filter(filter)
   }
 
   public bind = (callback: (transform: Mind.Transform) => void, event: Mind.ZoomEvent) => {
