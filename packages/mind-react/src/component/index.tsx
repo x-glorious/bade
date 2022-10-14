@@ -136,9 +136,9 @@ export const View = forwardRef(
     // 获取到对应dom，初始化mind
     useEffect(() => {
       if (viewport && container) {
-        setMind(new Mind.Graphic(viewport, container))
+        setMind(new Mind.Graphic(viewport, container, options))
       }
-    }, [viewport, container])
+    }, [viewport, container, options])
 
     // 同步 anchor
     useEffect(() => {
