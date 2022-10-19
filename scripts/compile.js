@@ -10,4 +10,4 @@ const lernaScope = Argv.scope ? `--scope ${Argv.scope}` : ''
 
 // 执行编译命令
 ConsoleHelper.tooltip('Run', compileCommand + '\n')
-ExecSh(`cross-env node_modules/.bin/lerna run ${compileCommand} ${lernaScope} --stream --parallel`)
+ExecSh(`cross-env node_modules/.bin/lerna run ${compileCommand} ${lernaScope} --no-private --sort`)

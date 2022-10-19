@@ -19,7 +19,7 @@
     "declarationDir": "./lib",
     "typeRoots": ["node_modules/@types"]
   },
-  "include": ["./index.ts"],
+  "include": ["./index.ts", "./src"],
   "exclude": ["node_modules/"],
   "compileOnSave": false
 }
