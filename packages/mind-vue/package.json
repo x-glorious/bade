@@ -1,0 +1,47 @@
+{
+  "name": "bade-mind-vue",
+  "version": "0.0.1",
+  "description": "",
+  "private": true,
+  "main": "./lib/index.js",
+  "module": "./lib/index.module.js",
+  "types": "./lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "demo": "parcel demo/index.html",
+    "clear": "rm -rf lib",
+    "compile": "npm run clear && rollup -c",
+    "compile:watch": "npm run clear && rollup -cw"
+  },
+  "keywords": [
+    "mind",
+    "javascript",
+    "vue",
+    "typescript",
+    "custom",
+    "render props",
+    "svg",
+    "dom",
+    "bade"
+  ],
+  "author": "",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/x-glorious/bade.git"
+  },
+  "dependencies": {
+    "bade-mind": "^1.1.0",
+    "d3": "^7.4.4"
+  },
+  "devDependencies": {
+    "@types/d3": "^7.1.0",
+    "rollup-plugin-vue": "^6.0.0",
+    "vue": "^3.2.39"
+  },
+  "peerDependencies": {
+    "vue": "^3.2.39"
+  }
+}
