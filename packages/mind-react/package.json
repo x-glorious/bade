@@ -1,6 +1,6 @@
 {
   "name": "bade-mind-react",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "",
   "main": "./lib/index.js",
   "module": "./lib/index.module.js",
@@ -32,7 +32,7 @@
     "url": "git+https://github.com/x-glorious/bade.git"
   },
   "dependencies": {
-    "bade-mind": "^1.1.0",
+    "bade-mind": "^1.1.1",
     "classnames": "^2.3.1",
     "d3": "^7.4.4"
   },
