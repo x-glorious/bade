@@ -1,6 +1,6 @@
 {
   "name": "bade-mind-vue",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "private": true,
   "main": "./lib/index.js",
@@ -33,7 +33,7 @@
     "url": "git+https://github.com/x-glorious/bade.git"
   },
   "dependencies": {
-    "bade-mind": "^1.1.1",
+    "bade-mind": "^1.1.2",
     "d3": "^7.4.4"
   },
   "devDependencies": {
