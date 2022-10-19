@@ -366,7 +366,7 @@ export class Graphic {
 
   /**
    * 渲染链接到某个`container`下
-   * @param container
+   * @param container 容器
    */
   public connectTo = (container: HTMLElement) => {
     Render.connect({
