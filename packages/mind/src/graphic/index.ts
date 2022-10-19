@@ -365,6 +365,19 @@ export class Graphic {
   }
 
   /**
+   * 渲染链接到某个`container`下
+   * @param container
+   */
+  public connectTo = (container: HTMLElement) => {
+    Render.connect({
+      cacheMap: this.cacheMap,
+      container,
+      options: this.options,
+      root: this.root!
+    })
+  }
+
+  /**
    * 同步渲染层尺寸到 container 中
    */
   private syncLayoutSize = () => {
@@ -379,12 +392,7 @@ export class Graphic {
    * 链接各个节点
    */
   private connect = () => {
-    Render.connect({
-      cacheMap: this.cacheMap,
-      container: this.container,
-      options: this.options,
-      root: this.root!
-    })
+    this.connectTo(this.container)
   }
   /**
    * 计算脑图布局

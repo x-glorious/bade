@@ -345,6 +345,14 @@ function getParent(id: string): Mind.Node | undefined
 
 **@param** `id` 节点id
 
+#### connectTo
+
+渲染链接到某个`container`下
+
+```tsx
+function connectTo(container: HTMLElement): void
+```
+
 #### getNodeOrientation
 
 获取`id`对应节点渲染方位
